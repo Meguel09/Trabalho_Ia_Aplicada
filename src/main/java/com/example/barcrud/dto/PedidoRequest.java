@@ -1,0 +1,5 @@
+package com.example.barcrud.dto;
+
+import jakarta.validation.constraints.NotNull;
+
+public record PedidoRequest(@NotNull Long contaId) {}
