@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "pedidos")
@@ -14,12 +15,14 @@ public class Pedido {
 
     @ManyToOne(optional=false)
     @JoinColumn(name="conta_id")
+    @JsonIgnoreProperties({"pedidos", "pagamentos"})
     private Conta conta;
 
     @Column(nullable=false)
     private LocalDateTime criadoEm = LocalDateTime.now();
 
     @OneToMany(mappedBy="pedido", cascade=CascadeType.ALL, orphanRemoval=true)
+    @JsonIgnoreProperties("pedido")
     private List<ItemPedido> itens = new ArrayList<>();
 
     public Pedido() {}

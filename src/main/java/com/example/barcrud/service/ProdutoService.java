@@ -20,7 +20,7 @@ public class ProdutoService {
     }
 
     public Produto criar(ProdutoRequest request) {
-        return repository.save(new Produto(request.nome(), request.categoria(), request.preco()));
+        return repository.save(new Produto(request.nome().trim(), request.categoria().trim(), request.preco()));
     }
 
     public List<Produto> listar() { return repository.findAll(); }
@@ -31,8 +31,8 @@ public class ProdutoService {
 
     public Produto atualizar(Long id, ProdutoRequest request) {
         Produto produto = buscar(id);
-        produto.setNome(request.nome());
-        produto.setCategoria(request.categoria());
+        produto.setNome(request.nome().trim());
+        produto.setCategoria(request.categoria().trim());
         produto.setPreco(request.preco());
         produto.setAtivo(request.ativo() == null ? produto.getAtivo() : request.ativo());
         return repository.save(produto);
@@ -43,7 +43,7 @@ public class ProdutoService {
         if (itemPedidoRepository.existsByProdutoId(id)) {
             produto.setAtivo(false);
             repository.save(produto);
-            return;
+            throw new BusinessException("Produto já foi usado em pedido e não pode ser apagado. Ele foi marcado como inativo.");
         }
         repository.delete(produto);
     }

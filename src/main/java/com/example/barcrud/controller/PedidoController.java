@@ -38,6 +38,11 @@ public class PedidoController {
         return service.adicionarItem(id, request);
     }
 
-    @DeleteMapping("/itens/{itemId}")
-    public void removerItem(@PathVariable Long itemId) { service.removerItem(itemId); }
+    @DeleteMapping("/{pedidoId}/itens/{itemId}")
+    public void removerItem(
+            @PathVariable Long pedidoId,
+            @PathVariable Long itemId
+    ) {
+        service.removerItem(pedidoId, itemId);
+    }
 }

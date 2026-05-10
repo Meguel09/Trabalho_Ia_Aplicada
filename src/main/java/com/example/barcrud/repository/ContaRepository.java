@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface ContaRepository extends JpaRepository<Conta, Long> {
     boolean existsByMesaIdAndStatus(Long mesaId, StatusConta status);
+    boolean existsByMesaId(Long mesaId);
     List<Conta> findByMesaId(Long mesaId);
 }

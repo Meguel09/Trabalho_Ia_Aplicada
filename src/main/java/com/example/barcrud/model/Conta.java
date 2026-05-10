@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "contas")
@@ -36,9 +37,11 @@ public class Conta {
     private LocalDateTime fechadaEm;
 
     @OneToMany(mappedBy="conta", cascade=CascadeType.ALL, orphanRemoval=true)
+    @JsonIgnoreProperties("conta")
     private List<Pedido> pedidos = new ArrayList<>();
 
     @OneToMany(mappedBy="conta", cascade=CascadeType.ALL, orphanRemoval=true)
+    @JsonIgnoreProperties("conta")
     private List<Pagamento> pagamentos = new ArrayList<>();
 
     public Conta() {}

@@ -30,7 +30,9 @@ public class PedidoService {
     public Pedido criar(PedidoRequest request) {
         Conta conta = contaRepository.findById(request.contaId())
                 .orElseThrow(() -> new NotFoundException("Conta não encontrada."));
-        if (conta.getStatus() == StatusConta.FECHADA) throw new BusinessException("Não é permitido adicionar pedido em conta fechada.");
+        if (conta.getStatus() == StatusConta.FECHADA) {
+            throw new BusinessException("Não é permitido criar pedido em conta fechada.");
+        }
         return pedidoRepository.save(new Pedido(conta));
     }
 
@@ -42,15 +44,25 @@ public class PedidoService {
 
     public Pedido atualizar(Long id, PedidoRequest request) {
         Pedido pedido = buscar(id);
+        if (pedido.getConta().getStatus() == StatusConta.FECHADA) {
+            throw new BusinessException("Não é possível editar pedido de conta fechada.");
+        }
+
         Conta conta = contaRepository.findById(request.contaId())
                 .orElseThrow(() -> new NotFoundException("Conta não encontrada."));
-        if (conta.getStatus() == StatusConta.FECHADA) throw new BusinessException("Não é permitido mover pedido para conta fechada.");
+        if (conta.getStatus() == StatusConta.FECHADA) {
+            throw new BusinessException("Não é permitido mover pedido para conta fechada.");
+        }
         pedido.setConta(conta);
         return pedidoRepository.save(pedido);
     }
 
     public void excluir(Long id) {
-        pedidoRepository.delete(buscar(id));
+        Pedido pedido = buscar(id);
+        if (pedido.getConta().getStatus() == StatusConta.FECHADA) {
+            throw new BusinessException("Não é possível excluir pedido de conta fechada.");
+        }
+        pedidoRepository.delete(pedido);
     }
 
     public ItemPedido adicionarItem(Long pedidoId, ItemPedidoRequest request) {
@@ -60,16 +72,26 @@ public class PedidoService {
         }
         Produto produto = produtoRepository.findById(request.produtoId())
                 .orElseThrow(() -> new NotFoundException("Produto não encontrado."));
-        if (!produto.getAtivo()) throw new BusinessException("Produto inativo não pode ser vendido.");
+        if (!produto.getAtivo()) {
+            throw new BusinessException("Produto inativo não pode ser vendido.");
+        }
         return itemPedidoRepository.save(new ItemPedido(pedido, produto, request.quantidade()));
     }
 
-    public void removerItem(Long itemId) {
+    public void removerItem(Long pedidoId, Long itemId) {
+        Pedido pedido = buscar(pedidoId);;
+
         ItemPedido item = itemPedidoRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Item do pedido não encontrado."));
-        if (item.getPedido().getConta().getStatus() == StatusConta.FECHADA) {
-            throw new BusinessException("Não é permitido remover item de conta fechada.");
+                .orElseThrow(() -> new RuntimeException("Item do pedido não encontrado."));
+
+        if (!item.getPedido().getId().equals(pedido.getId())) {
+            throw new RuntimeException("Este item não pertence ao pedido informado.");
         }
+
+        if (pedido.getConta().getStatus() == StatusConta.FECHADA) {
+            throw new RuntimeException("Não é possível remover item de pedido de uma conta fechada.");
+        }
+
         itemPedidoRepository.delete(item);
     }
 }

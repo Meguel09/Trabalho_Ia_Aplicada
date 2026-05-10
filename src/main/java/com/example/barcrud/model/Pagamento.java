@@ -3,6 +3,7 @@ package com.example.barcrud.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "pagamentos")
@@ -13,6 +14,7 @@ public class Pagamento {
 
     @ManyToOne(optional=false)
     @JoinColumn(name="conta_id")
+    @JsonIgnoreProperties({"pedidos", "pagamentos"})
     private Conta conta;
 
     @Column(nullable=false)
