@@ -1,4 +1,7 @@
 package com.example.barcrud.controller;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.barcrud.dto.AbrirContaRequest;
 import com.example.barcrud.dto.PagamentoRequest;

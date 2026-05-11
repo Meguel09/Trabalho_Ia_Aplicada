@@ -1,0 +1,16 @@
+package com.example.barcrud.controller;
+
+// ESTES SÃO OS IMPORTS QUE ESTÃO FALTANDO:
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HomeController {
+
+    @GetMapping("/home")
+    public String home(Model model) {
+        model.addAttribute("mensagem", "Olá, Spring Boot!");
+        return "home";
+    }
+}
