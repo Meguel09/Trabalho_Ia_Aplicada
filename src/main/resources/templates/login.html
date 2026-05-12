@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Seriguela Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="container">
+        <div class="visual-panel">
+            <div class="visual-content">
+                <div class="logo">
+                    <div class="fruits">
+                        <svg width="60" height="40" viewBox="0 0 100 60">
+                            <circle cx="35" cy="35" r="20" fill="#E29B18" />
+                            <circle cx="65" cy="40" r="20" fill="#E29B18" />
+                            <path d="M40 20 Q50 5 65 15" stroke="#3F5513" stroke-width="4" fill="none" />
+                        </svg>
+                    </div>
+                    <h1><span class="seri">seri</span><span class="guela">guela</span></h1>
+                </div>
+                <p class="welcome-text">Bem-vindo de volta ao Seriguela 🍊</p>
+            </div>
+        </div>
+        <div class="form-panel">
+            <div class="login-card">
+                <div class="mobile-logo">
+                    <svg width="50" height="35" viewBox="0 0 100 60">
+                        <circle cx="35" cy="35" r="20" fill="#E29B18" />
+                        <circle cx="65" cy="40" r="20" fill="#E29B18" />
+                        <path d="M40 20 Q50 5 65 15" stroke="#3F5513" stroke-width="4" fill="none" />
+                    </svg>
+                    <h2><span class="seri">seri</span><span class="guela">guela</span></h2>
+                </div>
+                <form>
+                    <div class="input-field input-wrapper">
+                        <i data-lucide="mail" class="input-icon"></i>
+                        <input type="email" placeholder="E-mail" required autocomplete="email">
+                    </div>
+                    <div class="input-field input-wrapper">
+                        <i data-lucide="lock" class="input-icon"></i>
+                        <input type="password" id="password" placeholder="Senha" required autocomplete="current-password" spellcheck="false">
+                        <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Mostrar senha">
+                            <!-- eye icon = when password is hidden -->
+                            <i data-lucide="eye" class="icon-eye"></i>
+                            <!-- eye-off icon = when password is visible -->
+                            <i data-lucide="eye-off" class="icon-eye-off"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="login-btn">ENTRAR</button>
+                    <a href="#" class="forgot-link">Esqueci minha senha</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        lucide.createIcons();
+        const toggleBtn = document.querySelector('#togglePasswordBtn');
+        const passwordInput = document.querySelector('#password');
+        
+        toggleBtn.addEventListener('click', function () {
+            const isShowingPassword = passwordInput.type === 'text';
+            if (isShowingPassword) {
+                // Hide password
+                passwordInput.type = 'password';
+                toggleBtn.classList.remove('is-visible'); // CSS will show .icon-eye
+                toggleBtn.setAttribute('aria-label', 'Mostrar senha');
+            } else {
+                // Show password
+                passwordInput.type = 'text';
+                toggleBtn.classList.add('is-visible'); // CSS will show .icon-eye-off
+                toggleBtn.setAttribute('aria-label', 'Ocultar senha');
+            }
+        });
+    </script>
+</body>
+</html>
