@@ -16,7 +16,7 @@
         <aside class="sidebar">
             <div class="logo">
                 <div class="fruits">
-                    <svg width="40" height="30" viewBox="0 0 100 60">
+                    <svg width="40" height="40" viewBox="0 0 100 60">
                         <circle cx="35" cy="35" r="20" fill="#E29B18" />
                         <circle cx="65" cy="40" r="20" fill="#E29B18" />
                         <path d="M40 20 Q50 5 65 15" stroke="#3F5513" stroke-width="4" fill="none" />
@@ -24,12 +24,26 @@
                 </div>
                 <h2><span class="seri">seri</span><span class="guela">guela</span></h2>
             </div>
+            <button class="menu-toggle" aria-label="Abrir menu" onclick="toggleDrawer()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
             <nav class="menu">
-                <a th:href="@{/home}" th:classappend="${#httpServletRequest.requestURI == '/home'} ? 'active'" class="menu-item"><i data-lucide="home"></i> Início</a>
-                <a th:href="@{/mesas}" th:classappend="${#httpServletRequest.requestURI == '/mesas'} ? 'active'" class="menu-item"><i data-lucide="users"></i> Mesas</a>
-                <a th:href="@{/pedidos}" th:classappend="${#httpServletRequest.requestURI == '/pedidos'} ? 'active'" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
-                <a th:href="@{/produtos}" th:classappend="${#httpServletRequest.requestURI == '/produtos'} ? 'active'" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                <a th:href="@{/home}" class="menu-item active"><i data-lucide="home"></i> Início</a>
+                <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
                 <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+            </nav>
+            <nav class="menu-drawer" id="drawerMenu">
+                <div class="menu">
+                    <a th:href="@{/home}" class="menu-item active"><i data-lucide="home"></i> Início</a>
+                    <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                    <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                    <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                    <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+                </div>
             </nav>
         </aside>
         <main class="main-content">
@@ -58,6 +72,36 @@
     </div>
     <script>
         lucide.createIcons();
+        // Troca dinâmica do destaque do menu (ambos menus)
+        function setActiveMenuItem(clickedItem) {
+            document.querySelectorAll('.menu-item').forEach(function(i) {
+                i.classList.remove('active');
+            });
+            clickedItem.classList.add('active');
+        }
+        document.querySelectorAll('.menu-item').forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                setActiveMenuItem(this);
+                closeDrawer();
+            });
+        });
+        // Gaveta
+        function toggleDrawer() {
+            var drawer = document.getElementById('drawerMenu');
+            drawer.classList.toggle('open');
+        }
+        function closeDrawer() {
+            var drawer = document.getElementById('drawerMenu');
+            drawer.classList.remove('open');
+        }
+        // Fecha gaveta ao clicar fora
+        document.addEventListener('click', function(e) {
+            var drawer = document.getElementById('drawerMenu');
+            var toggle = document.querySelector('.menu-toggle');
+            if (drawer.classList.contains('open') && !drawer.contains(e.target) && !toggle.contains(e.target)) {
+                drawer.classList.remove('open');
+            }
+        });
     </script>
 </body>
 </html>

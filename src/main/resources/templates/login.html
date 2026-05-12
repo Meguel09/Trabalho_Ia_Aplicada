@@ -41,7 +41,7 @@
                 <form th:action="@{/login}" method="POST">
                     <div class="input-field input-wrapper">
                         <i data-lucide="mail" class="input-icon"></i>
-                        <input type="email" name="email" placeholder="E-mail" required autocomplete="email">
+                        <input type="email" name="username" placeholder="E-mail" required autocomplete="email">
                     </div>
                     <div class="input-field input-wrapper">
                         <i data-lucide="lock" class="input-icon"></i>
@@ -51,8 +51,8 @@
                             <i data-lucide="eye-off" class="icon-eye-off"></i>
                         </button>
                     </div>
-                    <div th:if="${erro}" class="error-message" style="color: red; margin-bottom: 10px; text-align: center;">
-                        <p th:text="${erro}"></p>
+                    <div th:if="${param.error}" class="error-message" style="color: red; margin-bottom: 10px; text-align: center;">
+                        <p>E-mail ou senha inválidos. Tente novamente.</p>
                     </div>
                     <button type="submit" class="login-btn">ENTRAR</button>
                     <a href="#" class="forgot-link">Esqueci minha senha</a>

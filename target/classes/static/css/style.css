@@ -1,5 +1,4 @@
-
-/* MOBILE FIRST */
+/* Paleta e fontes iguais ao login */
 :root {
     --vermelho: #8F2325;
     --verde: #3F5513;
@@ -16,8 +15,6 @@ body {
     background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
     padding: 0;
     margin: 0;
-    overflow-x: hidden;
-    box-sizing: border-box;
 }
 
 .noise-overlay {
@@ -34,156 +31,39 @@ body {
 
 .container.home-container {
     display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-width: 0;
-    min-height: 100vh;
-    margin: 0;
+    width: 98vw;
+    max-width: 1200px;
+    min-height: 600px;
+    margin: 40px auto;
     background: var(--branco);
-    border-radius: 0;
-    box-shadow: none;
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.18);
     overflow: hidden;
     position: relative;
     z-index: 1;
-    box-sizing: border-box;
 }
 
 .sidebar {
-    width: 100%;
-    height: 70px;
+    width: 230px;
     background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
     color: var(--branco);
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    padding: 0 16px;
-    gap: 0;
-    justify-content: space-between;
-    position: relative;
-    box-sizing: border-box;
+    padding: 32px 0;
+    gap: 40px;
 }
 
 .logo {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-}
-.logo .fruits {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 40px;
+    gap: 0;
 }
 .logo h2 {
     font-family: var(--font-title);
-    font-size: 1.5rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-}
-.menu-toggle {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    z-index: 100;
-    position: relative;
-    right: 0;
-    margin-left: auto;
-}
-.menu-toggle span {
-    display: block;
-    width: 28px;
-    height: 4px;
-    margin: 4px 0;
-    background: var(--branco);
-    border-radius: 2px;
-    transition: 0.3s;
-}
-
-/* Menu drawer (gaveta) */
-.menu-drawer {
-    display: none;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 220px;
-    height: 100vh;
-    background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
-    box-shadow: -2px 0 16px rgba(0,0,0,0.12);
-    z-index: 99;
-    flex-direction: column;
-    padding: 32px 16px;
-    gap: 24px;
-    animation: slideIn 0.3s;
-}
-.menu-drawer.open {
-    display: flex;
-}
-.menu-drawer .menu {
-    flex-direction: column;
-    gap: 18px;
-    width: 100%;
-    align-items: flex-start;
-    padding-left: 0;
-}
-@keyframes slideIn {
-    from { right: -220px; }
-    to { right: 0; }
-}
-
-@media (max-width: 900px) {
-    .menu {
-        display: none !important;
-    }
-    .menu-toggle {
-        display: flex !important;
-        margin-left: auto;
-        position: static;
-    }
-    .menu-drawer {
-        display: none;
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 220px;
-        height: 100vh;
-        background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
-        box-shadow: -2px 0 16px rgba(0,0,0,0.12);
-        z-index: 99;
-        flex-direction: column;
-        padding: 32px 16px;
-        gap: 24px;
-        animation: slideIn 0.3s;
-    }
-    .menu-drawer.open {
-        display: flex;
-    }
-    .menu-drawer .menu {
-        display: flex !important;
-        flex-direction: column;
-        gap: 18px;
-        width: 100%;
-        align-items: flex-start;
-        padding-left: 0;
-    }
-}
-@media (min-width: 901px) {
-    .menu-toggle {
-        display: none !important;
-    }
-    .menu-drawer {
-        display: none !important;
-    }
-    .menu {
-        display: flex !important;
-    }
+    font-size: 2.2rem;
+    margin-top: 8px;
 }
 .seri { color: var(--vermelho); }
 .sidebar .seri { color: var(--branco); }
@@ -191,11 +71,11 @@ body {
 
 .menu {
     display: flex;
-    flex-direction: row;
-    gap: 12px;
-    width: auto;
-    align-items: center;
-    padding-left: 0;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    align-items: flex-start;
+    padding-left: 32px;
 }
 .menu-item {
     display: flex;
@@ -203,7 +83,7 @@ body {
     gap: 12px;
     color: var(--branco);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     padding: 8px 0;
     border-radius: 8px 0 0 8px;
@@ -216,36 +96,36 @@ body {
 
 .main-content {
     flex: 1;
-    padding: 24px 8px;
+    padding: 48px 48px 32px 48px;
     display: flex;
     flex-direction: column;
     min-width: 0;
 }
 .main-header h1 {
     font-family: var(--font-title);
-    font-size: 1.5rem;
+    font-size: 2.5rem;
     color: var(--vermelho);
     margin-bottom: 8px;
 }
 .subtitle {
     color: #444;
-    font-size: 1rem;
-    margin-bottom: 24px;
+    font-size: 1.2rem;
+    margin-bottom: 32px;
 }
 
 .cards {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
+    gap: 32px;
+    margin-top: 24px;
+    flex-wrap: wrap;
 }
 .card {
     background: var(--branco);
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(143,35,37,0.07);
-    padding: 18px 8px;
-    min-width: 120px;
-    width: 100%;
+    padding: 32px 28px;
+    min-width: 220px;
+    flex: 1 1 220px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -259,107 +139,63 @@ body {
 }
 .card i, .card svg {
     color: var(--amarelo);
-    font-size: 2rem;
-    margin-bottom: 8px;
+    font-size: 2.5rem;
+    margin-bottom: 12px;
 }
 .card h3 {
     font-family: var(--font-title);
     color: var(--vermelho);
-    font-size: 1.1rem;
-    margin-bottom: 6px;
+    font-size: 1.3rem;
+    margin-bottom: 8px;
 }
 .card p {
     color: #444;
-    font-size: 0.95rem;
+    font-size: 1rem;
 }
 
-/* TABLET */
-@media (min-width: 600px) and (max-width: 899px) {
+@media (max-width: 900px) {
     .container.home-container {
-        border-radius: 20px;
-        margin: 40px auto;
-        min-height: 600px;
-        max-width: 700px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.12);
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        min-width: 0;
+        width: 98vw;
     }
     .sidebar {
+        flex-direction: row;
+        width: 100%;
         height: 90px;
         padding: 0 16px;
-        border-radius: 20px 20px 0 0;
+        gap: 24px;
+        justify-content: space-between;
+    }
+    .menu {
+        flex-direction: row;
+        gap: 12px;
+        padding-left: 0;
+        align-items: center;
     }
     .main-content {
-        align-items: center;
-        justify-content: center;
-        padding: 40px 24px 32px 24px;
-        width: 100%;
-    }
-    .main-header {
-        width: 100%;
-        text-align: center;
-    }
-    .main-header h1 {
-        font-size: 2rem;
-        text-align: center;
-    }
-    .subtitle {
-        text-align: center;
+        padding: 32px 12px;
     }
     .cards {
-        flex-direction: row;
         gap: 16px;
-        justify-content: center;
-        width: 100%;
-    }
-    .card {
-        min-width: 180px;
-        padding: 24px 16px;
     }
 }
 
-/* DESKTOP */
-@media (min-width: 900px) {
+@media (max-width: 600px) {
     .container.home-container {
-        flex-direction: row;
-        max-width: 1200px;
-        margin: 40px auto;
-    }
-    .sidebar {
-        flex-direction: column;
-        width: 230px;
-        height: auto;
-        padding: 32px 0;
-        gap: 40px;
-        align-items: center;
-        justify-content: flex-start;
-    }
-    .logo h2 {
-        font-size: 2.2rem;
-    }
-    .menu {
-        flex-direction: column;
-        gap: 18px;
-        width: 100%;
-        align-items: flex-start;
-        padding-left: 32px;
-    }
-    .main-content {
-        padding: 48px 48px 32px 48px;
-    }
-    .cards {
-        gap: 32px;
-    }
-    .card {
-        min-width: 220px;
-        padding: 32px 28px;
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
     }
     .main-header h1 {
-        font-size: 2.5rem;
+        font-size: 1.5rem;
     }
-    .subtitle {
-        font-size: 1.2rem;
-        margin-bottom: 32px;
+    .sidebar {
+        height: 70px;
+        padding: 0 6px;
+    }
+    .card {
+        padding: 18px 8px;
+        min-width: 120px;
     }
 }

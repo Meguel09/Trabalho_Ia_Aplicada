@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <div class="noise-overlay"></div>
@@ -30,20 +30,19 @@
                 <span></span>
             </button>
             <nav class="menu">
-                <a href="#" class="menu-item active"><i data-lucide="home"></i> Início</a>
-                <a href="#" class="menu-item"><i data-lucide="users"></i> Mesas</a>
-                <a href="#" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
-                <a href="#" class="menu-item"><i data-lucide="package"></i> Produtos</a>
-                <a href="#" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+                <a th:href="@{/home}" class="menu-item active"><i data-lucide="home"></i> Início</a>
+                <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
             </nav>
-                <!-- No mobile, apenas a gaveta mostra os botões -->
             <nav class="menu-drawer" id="drawerMenu">
                 <div class="menu">
-                    <a href="#" class="menu-item active"><i data-lucide="home"></i> Início</a>
-                    <a href="#" class="menu-item"><i data-lucide="users"></i> Mesas</a>
-                    <a href="#" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
-                    <a href="#" class="menu-item"><i data-lucide="package"></i> Produtos</a>
-                    <a href="#" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+                    <a th:href="@{/home}" class="menu-item active"><i data-lucide="home"></i> Início</a>
+                    <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                    <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                    <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                    <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
                 </div>
             </nav>
         </aside>
@@ -83,7 +82,6 @@
         document.querySelectorAll('.menu-item').forEach(function(item) {
             item.addEventListener('click', function(e) {
                 setActiveMenuItem(this);
-                if(this.getAttribute('href') === '#') e.preventDefault();
                 closeDrawer();
             });
         });
