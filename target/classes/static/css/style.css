@@ -16,6 +16,8 @@ body {
     background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
     padding: 0;
     margin: 0;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .noise-overlay {
@@ -33,7 +35,7 @@ body {
 .container.home-container {
     display: flex;
     flex-direction: column;
-    width: 100vw;
+    width: 100%;
     min-width: 0;
     min-height: 100vh;
     margin: 0;
@@ -43,6 +45,7 @@ body {
     overflow: hidden;
     position: relative;
     z-index: 1;
+    box-sizing: border-box;
 }
 
 .sidebar {
@@ -271,24 +274,44 @@ body {
 }
 
 /* TABLET */
-@media (min-width: 600px) {
+@media (min-width: 600px) and (max-width: 899px) {
     .container.home-container {
         border-radius: 20px;
-        margin: 24px auto;
+        margin: 40px auto;
         min-height: 600px;
-        max-width: 900px;
+        max-width: 700px;
         box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
     .sidebar {
         height: 90px;
         padding: 0 16px;
+        border-radius: 20px 20px 0 0;
+    }
+    .main-content {
+        align-items: center;
+        justify-content: center;
+        padding: 40px 24px 32px 24px;
+        width: 100%;
+    }
+    .main-header {
+        width: 100%;
+        text-align: center;
     }
     .main-header h1 {
         font-size: 2rem;
+        text-align: center;
+    }
+    .subtitle {
+        text-align: center;
     }
     .cards {
         flex-direction: row;
         gap: 16px;
+        justify-content: center;
+        width: 100%;
     }
     .card {
         min-width: 180px;
