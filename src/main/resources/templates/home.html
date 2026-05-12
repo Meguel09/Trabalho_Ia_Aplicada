@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Início - Seriguela Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="container home-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="fruits">
+                    <svg width="40" height="30" viewBox="0 0 100 60">
+                        <circle cx="35" cy="35" r="20" fill="#E29B18" />
+                        <circle cx="65" cy="40" r="20" fill="#E29B18" />
+                        <path d="M40 20 Q50 5 65 15" stroke="#3F5513" stroke-width="4" fill="none" />
+                    </svg>
+                </div>
+                <h2><span class="seri">seri</span><span class="guela">guela</span></h2>
+            </div>
+            <nav class="menu">
+                <a th:href="@{/home}" th:classappend="${#httpServletRequest.requestURI == '/home'} ? 'active'" class="menu-item"><i data-lucide="home"></i> Início</a>
+                <a th:href="@{/mesas}" th:classappend="${#httpServletRequest.requestURI == '/mesas'} ? 'active'" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                <a th:href="@{/pedidos}" th:classappend="${#httpServletRequest.requestURI == '/pedidos'} ? 'active'" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                <a th:href="@{/produtos}" th:classappend="${#httpServletRequest.requestURI == '/produtos'} ? 'active'" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Bem-vindo ao Seriguela Bar 🍊</h1>
+                <p class="subtitle">Gerencie mesas, pedidos e produtos de forma simples e rápida.</p>
+            </header>
+            <section class="cards">
+                <div class="card">
+                    <i data-lucide="users"></i>
+                    <h3>Mesas</h3>
+                    <p>Gerencie as mesas do bar, status e ocupação.</p>
+                </div>
+                <div class="card">
+                    <i data-lucide="shopping-cart"></i>
+                    <h3>Pedidos</h3>
+                    <p>Acompanhe e registre pedidos dos clientes.</p>
+                </div>
+                <div class="card">
+                    <i data-lucide="package"></i>
+                    <h3>Produtos</h3>
+                    <p>Adicione, edite e controle o estoque de produtos.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

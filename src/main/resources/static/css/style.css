@@ -1,0 +1,201 @@
+/* Paleta e fontes iguais ao login */
+:root {
+    --vermelho: #8F2325;
+    --verde: #3F5513;
+    --amarelo: #E29B18;
+    --branco: #FFFFFF;
+    --preto: #1A1A1A;
+    --font-title: 'Fraunces', serif;
+    --font-body: 'Nunito', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
+    padding: 0;
+    margin: 0;
+}
+
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.container.home-container {
+    display: flex;
+    width: 98vw;
+    max-width: 1200px;
+    min-height: 600px;
+    margin: 40px auto;
+    background: var(--branco);
+    border-radius: 20px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.18);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar {
+    width: 230px;
+    background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
+    color: var(--branco);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 0;
+    gap: 40px;
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+.logo h2 {
+    font-family: var(--font-title);
+    font-size: 2.2rem;
+    margin-top: 8px;
+}
+.seri { color: var(--vermelho); }
+.sidebar .seri { color: var(--branco); }
+.guela { color: var(--verde); }
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    align-items: flex-start;
+    padding-left: 32px;
+}
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--branco);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 8px 0;
+    border-radius: 8px 0 0 8px;
+    transition: background 0.2s, color 0.2s;
+}
+.menu-item.active, .menu-item:hover {
+    background: rgba(255,255,255,0.10);
+    color: var(--amarelo);
+}
+
+.main-content {
+    flex: 1;
+    padding: 48px 48px 32px 48px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.main-header h1 {
+    font-family: var(--font-title);
+    font-size: 2.5rem;
+    color: var(--vermelho);
+    margin-bottom: 8px;
+}
+.subtitle {
+    color: #444;
+    font-size: 1.2rem;
+    margin-bottom: 32px;
+}
+
+.cards {
+    display: flex;
+    gap: 32px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+.card {
+    background: var(--branco);
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(143,35,37,0.07);
+    padding: 32px 28px;
+    min-width: 220px;
+    flex: 1 1 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+}
+.card:hover {
+    box-shadow: 0 8px 32px rgba(226,155,24,0.18);
+    transform: translateY(-4px) scale(1.03);
+}
+.card i, .card svg {
+    color: var(--amarelo);
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+.card h3 {
+    font-family: var(--font-title);
+    color: var(--vermelho);
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+}
+.card p {
+    color: #444;
+    font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+    .container.home-container {
+        flex-direction: column;
+        min-width: 0;
+        width: 98vw;
+    }
+    .sidebar {
+        flex-direction: row;
+        width: 100%;
+        height: 90px;
+        padding: 0 16px;
+        gap: 24px;
+        justify-content: space-between;
+    }
+    .menu {
+        flex-direction: row;
+        gap: 12px;
+        padding-left: 0;
+        align-items: center;
+    }
+    .main-content {
+        padding: 32px 12px;
+    }
+    .cards {
+        gap: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container.home-container {
+        margin: 0;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    .main-header h1 {
+        font-size: 1.5rem;
+    }
+    .sidebar {
+        height: 70px;
+        padding: 0 6px;
+    }
+    .card {
+        padding: 18px 8px;
+        min-width: 120px;
+    }
+}

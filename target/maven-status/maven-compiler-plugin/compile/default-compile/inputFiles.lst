@@ -1,6 +1,7 @@
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\BarCrudApplication.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\controller\ContaController.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\controller\HomeController.java
+C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\controller\LoginController.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\controller\MesaController.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\controller\PedidoController.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\controller\ProdutoController.java
@@ -21,12 +22,15 @@ C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\exampl
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\Produto.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\StatusConta.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\StatusMesa.java
+C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\Usuario.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\ContaRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\ItemPedidoRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\MesaRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\PagamentoRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\PedidoRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\ProdutoRepository.java
+C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\UsuarioRepository.java
+C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\SecurityConfig.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\service\ContaService.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\service\MesaService.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\service\PedidoService.java

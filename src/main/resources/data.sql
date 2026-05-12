@@ -8,3 +8,6 @@ INSERT INTO produtos (id, nome, categoria, preco, ativo) VALUES (3, 'Batata Frit
 
 ALTER TABLE mesas ALTER COLUMN id RESTART WITH 4;
 ALTER TABLE produtos ALTER COLUMN id RESTART WITH 4;
+
+INSERT INTO usuario (id, email, senha, nome) VALUES (1, 'admin@seriguela.com', 'admin123', 'Administrador');
+ALTER TABLE usuario ALTER COLUMN id RESTART WITH 2;
