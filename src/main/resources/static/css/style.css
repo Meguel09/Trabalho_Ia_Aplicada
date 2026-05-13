@@ -9,6 +9,10 @@
     --font-body: 'Nunito', sans-serif;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: var(--font-body);
     min-height: 100vh;
@@ -94,6 +98,25 @@ body {
     color: var(--amarelo);
 }
 
+/* Oculta a gaveta e o botão de menu no desktop */
+.menu-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+}
+.menu-toggle span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--branco);
+    border-radius: 2px;
+}
+.menu-drawer {
+    display: none;
+}
+
 .main-content {
     flex: 1;
     padding: 48px 48px 32px 48px;
@@ -157,7 +180,7 @@ body {
     .container.home-container {
         flex-direction: column;
         min-width: 0;
-        width: 98vw;
+        width: 100%;
     }
     .sidebar {
         flex-direction: row;
@@ -167,11 +190,34 @@ body {
         gap: 24px;
         justify-content: space-between;
     }
-    .menu {
+    .sidebar > .menu {
+        display: none; /* Oculta o menu padrão no mobile */
+    }
+    .menu-toggle {
+        display: flex; /* Exibe o botão hambúrguer */
+    }
+    .menu-drawer {
+        position: absolute;
+        top: 90px;
+        right: 0;
+        width: 250px;
+        height: calc(100% - 90px);
+        background: linear-gradient(135deg, var(--vermelho) 0%, var(--amarelo) 100%);
+        flex-direction: column;
+        padding: 20px 0;
+        z-index: 100;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.15);
+    }
+    .menu-drawer.open {
+        display: flex;
+    }
+    .logo {
         flex-direction: row;
         gap: 12px;
-        padding-left: 0;
-        align-items: center;
+    }
+    .logo h2 {
+        font-size: 1.8rem;
+        margin-top: 0;
     }
     .main-content {
         padding: 32px 12px;
@@ -193,6 +239,20 @@ body {
     .sidebar {
         height: 70px;
         padding: 0 6px;
+    }
+    .menu-drawer {
+        top: 70px;
+        height: calc(100% - 70px);
+    }
+    .logo {
+        gap: 8px;
+    }
+    .logo h2 {
+        font-size: 1.5rem;
+    }
+    .logo svg {
+        width: 40px;
+        height: 40px;
     }
     .card {
         padding: 18px 8px;
