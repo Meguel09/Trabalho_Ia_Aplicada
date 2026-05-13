@@ -29,8 +29,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/pedidos")
@@ -49,22 +53,58 @@ public class PedidoController {
     }
 
     @GetMapping
-    public String tela(Model model) {
-        List<Pedido> pedidos = pedidoService.listar().stream()
-                .sorted(Comparator.comparing(Pedido::getCriadoEm).reversed())
+    public String tela(@RequestParam(required = false) String q,
+                       @RequestParam(required = false) Long mesaId,
+                       @RequestParam(required = false) StatusConta status,
+                       Model model) {
+        List<Mesa> mesas = mesaService.listar().stream()
+                .sorted(Comparator.comparing(Mesa::getNome, String.CASE_INSENSITIVE_ORDER))
                 .toList();
-        List<Conta> contasAbertas = contaService.listar().stream()
-                .filter(conta -> conta.getStatus() == StatusConta.ABERTA)
-                .toList();
-        List<Mesa> mesasDisponiveis = mesaService.listar().stream()
+        List<Mesa> mesasDisponiveis = mesas.stream()
                 .filter(mesa -> mesa.getStatus() != StatusMesa.FECHADA)
                 .toList();
         List<Produto> produtosAtivos = produtoService.listar().stream()
                 .filter(Produto::getAtivo)
                 .toList();
 
-        model.addAttribute("pedidos", pedidos);
+        String termo = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
+        List<Conta> contasFiltradas = contaService.listar().stream()
+                .filter(conta -> mesaId == null || conta.getMesa().getId().equals(mesaId))
+                .filter(conta -> status == null || conta.getStatus() == status)
+                .filter(conta -> termo.isBlank() || correspondeAoTermo(conta, termo))
+                .sorted(Comparator
+                        .comparing((Conta conta) -> conta.getMesa().getNome(), String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(Conta::getCliente, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+
+        Map<Long, List<Conta>> contasPorMesa = contasFiltradas.stream()
+                .collect(LinkedHashMap::new,
+                        (map, conta) -> map.computeIfAbsent(conta.getMesa().getId(), id -> new java.util.ArrayList<>()).add(conta),
+                        Map::putAll);
+
+        List<MesaPedidoView> mesasPedidos = contasPorMesa.values().stream()
+                .map(this::montarMesaPedidoView)
+                .toList();
+
+        int totalPedidos = contasFiltradas.stream()
+                .mapToInt(conta -> conta.getPedidos().size())
+                .sum();
+        long contasAbertas = contasFiltradas.stream()
+                .filter(conta -> conta.getStatus() == StatusConta.ABERTA)
+                .count();
+        BigDecimal saldoAberto = mesasPedidos.stream()
+                .map(MesaPedidoView::totalAberto)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        model.addAttribute("mesasPedidos", mesasPedidos);
+        model.addAttribute("totalPedidos", totalPedidos);
         model.addAttribute("contasAbertas", contasAbertas);
+        model.addAttribute("saldoAberto", saldoAberto);
+        model.addAttribute("mesas", mesas);
+        model.addAttribute("mesaIdSelecionada", mesaId);
+        model.addAttribute("statusSelecionado", status);
+        model.addAttribute("q", q == null ? "" : q);
+        model.addAttribute("statusPedidoOptions", StatusConta.values());
         model.addAttribute("mesasDisponiveis", mesasDisponiveis);
         model.addAttribute("produtosAtivos", produtosAtivos);
         return "pedidos";
@@ -172,4 +212,45 @@ public class PedidoController {
     @ResponseBody
     @DeleteMapping("/api/itens/{itemId}")
     public void removerItem(@PathVariable Long itemId) { pedidoService.removerItem(itemId); }
+
+    private boolean correspondeAoTermo(Conta conta, String termo) {
+        return contem(conta.getCliente(), termo)
+                || contem(conta.getMesa().getNome(), termo)
+                || contem(conta.getMesa().getStatus().name(), termo)
+                || contem(conta.getStatus().name(), termo);
+    }
+
+    private boolean contem(String valor, String termo) {
+        return valor != null && valor.toLowerCase(Locale.ROOT).contains(termo);
+    }
+
+    private MesaPedidoView montarMesaPedidoView(List<Conta> contas) {
+        Mesa mesa = contas.get(0).getMesa();
+        BigDecimal totalMesa = contas.stream()
+                .map(Conta::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalAberto = contas.stream()
+                .filter(conta -> conta.getStatus() == StatusConta.ABERTA)
+                .map(Conta::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalFechado = totalMesa.subtract(totalAberto);
+        int pedidos = contas.stream()
+                .mapToInt(conta -> conta.getPedidos().size())
+                .sum();
+        long clientesAbertos = contas.stream()
+                .filter(conta -> conta.getStatus() == StatusConta.ABERTA)
+                .count();
+
+        return new MesaPedidoView(mesa, contas, totalMesa, totalAberto, totalFechado, pedidos, clientesAbertos);
+    }
+
+    public record MesaPedidoView(
+            Mesa mesa,
+            List<Conta> contas,
+            BigDecimal totalMesa,
+            BigDecimal totalAberto,
+            BigDecimal totalFechado,
+            int pedidos,
+            long clientesAbertos
+    ) {}
 }

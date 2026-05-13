@@ -137,6 +137,140 @@
     font-family: var(--font-title);
 }
 
+.filters-panel {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.5fr) minmax(160px, 1fr) minmax(160px, 1fr) auto;
+    gap: 12px;
+    align-items: end;
+    margin: 20px 0;
+    padding: 16px;
+    border: 1px solid #efe5df;
+    border-radius: 8px;
+    background: #fffaf7;
+}
+
+.filter-field {
+    display: grid;
+    gap: 6px;
+}
+
+.filter-field label {
+    color: #555;
+    font-size: 0.85rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.filter-field input,
+.filter-field select,
+.new-client-box input,
+.new-client-box select {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1.5px solid #e6ded9;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 0.98rem;
+    outline: none;
+    background: var(--branco);
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translateY(-50%);
+    color: #888;
+}
+
+.search-box input {
+    padding-left: 40px;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mesa-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.mesa-card {
+    background: var(--branco);
+    border: 1px solid #efe5df;
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(143,35,37,0.07);
+    overflow: hidden;
+}
+
+.mesa-card-header,
+.mesa-card-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+}
+
+.mesa-card-header {
+    border-bottom: 1px solid #f1ebe8;
+}
+
+.mesa-card h2 {
+    margin: 4px 0 0;
+    color: var(--preto);
+    font-size: 1.35rem;
+}
+
+.mesa-card-body {
+    display: grid;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #fffaf7;
+}
+
+.metric {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #666;
+    font-weight: 800;
+}
+
+.metric strong {
+    color: var(--vermelho);
+}
+
+.mesa-card-footer {
+    align-items: center;
+    color: #777;
+    font-weight: 800;
+}
+
+.badge-mesa-livre {
+    background: rgba(63, 85, 19, 0.15);
+    color: var(--verde);
+}
+
+.badge-mesa-ocupada {
+    background: rgba(226, 155, 24, 0.18);
+    color: #9d6507;
+}
+
+.badge-mesa-fechada {
+    background: rgba(143, 35, 37, 0.15);
+    color: var(--vermelho);
+}
+
 .orders-list {
     display: grid;
     gap: 16px;
@@ -403,10 +537,127 @@
     gap: 10px;
 }
 
+.mesa-modal-content {
+    width: min(96vw, 920px);
+    max-height: 92vh;
+    overflow-y: auto;
+}
+
+.mesa-modal-content .modal-header p {
+    margin: 4px 0 0;
+    color: #666;
+    font-weight: 800;
+}
+
+.client-list {
+    display: grid;
+    gap: 14px;
+}
+
+.client-card {
+    border: 1px solid #efe5df;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--branco);
+}
+
+.client-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fffaf7;
+    border-bottom: 1px solid #f1ebe8;
+}
+
+.client-card h3 {
+    margin: 4px 0 0;
+    color: var(--preto);
+    font-size: 1.18rem;
+}
+
+.client-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #666;
+    font-weight: 900;
+    border-bottom: 1px solid #f6f1ee;
+}
+
+.client-total strong {
+    color: var(--vermelho);
+    font-size: 1.2rem;
+}
+
+.pedido-group {
+    border-bottom: 1px solid #f6f1ee;
+}
+
+.pedido-title {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    color: #555;
+    font-weight: 900;
+}
+
+.pedido-title span {
+    color: var(--vermelho);
+}
+
+.client-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #fffaf7;
+}
+
+.client-actions form {
+    margin: 0;
+}
+
+.new-client-box {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px dashed #decfc7;
+    border-radius: 8px;
+    background: #fffaf7;
+}
+
+.new-client-box h3 {
+    margin: 0 0 12px;
+    color: var(--vermelho);
+}
+
+.new-client-box form {
+    display: grid;
+    grid-template-columns: minmax(160px, 1fr) minmax(180px, 1fr) 90px auto;
+    gap: 10px;
+}
+
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
 @media (max-width: 760px) {
+    .filters-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        justify-content: stretch;
+    }
+
+    .filter-actions .btn-primary,
+    .filter-actions .btn-secondary {
+        flex: 1;
+    }
+
     .summary-grid {
         grid-template-columns: 1fr;
     }
@@ -419,6 +670,14 @@
 
     .add-item-form {
         grid-template-columns: 1fr;
+    }
+
+    .new-client-box form {
+        grid-template-columns: 1fr;
+    }
+
+    .client-actions {
+        flex-direction: column;
     }
 }
 
@@ -459,5 +718,26 @@
         max-height: calc(100vh - 24px);
         overflow-y: auto;
         border-radius: 8px 8px 0 0;
+    }
+
+    .mesa-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mesa-card-header,
+    .mesa-card-footer,
+    .client-card-header,
+    .client-total,
+    .pedido-title {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .mesa-card-footer,
+    .client-card-header,
+    .client-total,
+    .pedido-title {
+        flex-direction: column;
+        align-items: stretch;
     }
 }

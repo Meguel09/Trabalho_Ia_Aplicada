@@ -64,10 +64,24 @@ body {
     align-items: center;
     gap: 0;
 }
+
+.logo .fruits {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    line-height: 0;
+}
+
+.logo svg {
+    display: block;
+}
+
 .logo h2 {
     font-family: var(--font-title);
     font-size: 2.2rem;
-    margin-top: 8px;
+    line-height: 1;
+    margin: 8px 0 0;
 }
 .seri { color: var(--vermelho); }
 .sidebar .seri { color: var(--branco); }
@@ -188,6 +202,7 @@ body {
         height: 90px;
         padding: 0 16px;
         gap: 24px;
+        align-items: center;
         justify-content: space-between;
     }
     .sidebar > .menu {
@@ -195,6 +210,12 @@ body {
     }
     .menu-toggle {
         display: flex; /* Exibe o botão hambúrguer */
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 44px;
+        width: 44px;
+        height: 44px;
+        padding: 0;
     }
     .menu-drawer {
         position: absolute;
@@ -213,7 +234,9 @@ body {
     }
     .logo {
         flex-direction: row;
+        align-items: center;
         gap: 12px;
+        min-width: 0;
     }
     .logo h2 {
         font-size: 1.8rem;
@@ -238,17 +261,18 @@ body {
     }
     .sidebar {
         height: 70px;
-        padding: 0 6px;
+        padding: 0 12px;
+        gap: 12px;
     }
     .menu-drawer {
         top: 70px;
         height: calc(100% - 70px);
     }
     .logo {
-        gap: 3px;
+        gap: 8px;
     }
     .logo h2 {
-        font-size: 1.5rem;
+        font-size: clamp(1.35rem, 7vw, 1.55rem);
     }
     .logo svg {
         width: 40px;
