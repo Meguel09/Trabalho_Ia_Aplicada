@@ -1,6 +1,7 @@
 package com.example.barcrud.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,4 +32,10 @@ public class Pedido {
     public List<ItemPedido> getItens() { return itens; }
 
     public void setConta(Conta conta) { this.conta = conta; }
+
+    public BigDecimal getTotal() {
+        return itens.stream()
+                .map(ItemPedido::getTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

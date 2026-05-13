@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesas - Seriguela Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Estilos Globais (Barra Lateral, Responsividade Base) e Específicos -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/mesas.css}">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="container home-container">
+        
+        <!-- MENU LATERAL (Idêntico ao da Home) -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="fruits">
+                    <svg width="40" height="40" viewBox="0 0 100 60">
+                        <circle cx="35" cy="35" r="20" fill="#E29B18" />
+                        <circle cx="65" cy="40" r="20" fill="#E29B18" />
+                        <path d="M40 20 Q50 5 65 15" stroke="#3F5513" stroke-width="4" fill="none" />
+                    </svg>
+                </div>
+                <h2><span class="seri">seri</span><span class="guela">guela</span></h2>
+            </div>
+            <button class="menu-toggle" aria-label="Abrir menu" onclick="toggleDrawer()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="menu">
+                <a th:href="@{/home}" class="menu-item"><i data-lucide="home"></i> Início</a>
+                <!-- Aqui o link de Mesas fica .active -->
+                <a th:href="@{/mesas}" class="menu-item active"><i data-lucide="users"></i> Mesas</a>
+                <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+            </nav>
+            <nav class="menu-drawer" id="drawerMenu">
+                <div class="menu">
+                    <a th:href="@{/home}" class="menu-item"><i data-lucide="home"></i> Início</a>
+                    <a th:href="@{/mesas}" class="menu-item active"><i data-lucide="users"></i> Mesas</a>
+                    <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                    <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                    <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="main-content">
+            <header class="main-header header-actions">
+                <div>
+                    <h1>Mesas 🪑</h1>
+                    <p class="subtitle">Cadastre, edite e acompanhe o status das mesas.</p>
+                </div>
+                <button class="btn-primary" onclick="openModal()"><i data-lucide="plus"></i> Cadastrar Mesa</button>
+            </header>
+
+            <!-- Alertas de Sucesso e Erro -->
+            <div th:if="${successMessage}" class="alert alert-success">
+                <i data-lucide="check-circle"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close-alert" onclick="this.closest('.alert').remove()" aria-label="Fechar alerta">
+                    <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error">
+                <i data-lucide="alert-circle"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close-alert" onclick="this.closest('.alert').remove()" aria-label="Fechar alerta">
+                    <i data-lucide="x" style="width: 20px; height: 20px;"></i>
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="mesa-row" th:each="mesa : ${mesas}" th:with="statusName=${mesa.status != null ? mesa.status.name() : 'LIVRE'}">
+                            <td class="mesa-name" th:text="${mesa.nome}">Mesa 1</td>
+                            <td class="mesa-status">
+                                <span th:class="|badge badge-${#strings.toLowerCase(statusName)}|" th:text="${statusName}">LIVRE</span>
+                            </td>
+                            <td class="mesa-actions">
+                                <div class="mesa-actions-list">
+                                    <!-- Ao clicar em editar, enviamos o ID e o nome para a função JS preencher o Modal -->
+                                    <button type="button"
+                                            class="btn-icon btn-edit-mesa"
+                                            title="Editar"
+                                            th:data-id="${mesa.id}"
+                                            th:data-nome="${mesa.nome}"
+                                            th:data-status="${statusName}">
+                                        <i data-lucide="edit-2"></i>
+                                    </button>
+                                    <!-- Formulário de Exclusão com confirmação via JS -->
+                                    <form th:id="|deleteForm-${mesa.id}|" th:action="@{/mesas/excluir/{id}(id=${mesa.id})}" method="POST" style="margin: 0;">
+                                        <button type="button"
+                                                class="btn-icon btn-icon-danger btn-delete-mesa"
+                                                title="Excluir"
+                                                th:data-id="${mesa.id}"
+                                                th:data-nome="${mesa.nome}">
+                                            <i data-lucide="trash-2"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Feedback Visual caso não existam Mesas -->
+                        <tr class="empty-row" th:if="${#lists.isEmpty(mesas)}">
+                            <td colspan="3" style="text-align: center; color: #888;">Nenhuma mesa cadastrada.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE CADASTRO/EDIÇÃO -->
+    <div id="mesaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Cadastrar Mesa</h2>
+                <button class="btn-close" onclick="closeModal()"><i data-lucide="x"></i></button>
+            </div>
+            <!-- Formulário adaptável: Action será modificada dinamicamente pelo Javascript dependendo se for criação ou edição -->
+            <form id="mesaForm" th:action="@{/mesas}" method="POST">
+                <div class="input-field">
+                    <label for="nome">Nome da Mesa</label>
+                    <input type="text" id="nome" name="nome" required maxlength="60" placeholder="Ex: Varanda, Balcão 1, Mesa Azul">
+                </div>
+                <div class="input-field" id="statusField" style="display: none;">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="LIVRE">Livre</option>
+                        <option value="OCUPADA">Ocupada</option>
+                        <option value="FECHADA">Fechada</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-text-center" style="max-width: 350px;">
+            <div class="modal-icon-warning">
+                <i data-lucide="alert-triangle" style="width: 32px; height: 32px;"></i>
+            </div>
+            <h2>Excluir Mesa?</h2>
+            <p>Tem certeza que deseja excluir a <strong id="deleteMesaNumber"></strong>? Esta ação não poderá ser desfeita.</p>
+            <div class="modal-actions" style="justify-content: center;">
+                <button type="button" class="btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
+                <button type="button" class="btn-primary" id="confirmDeleteBtn">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Funções do Menu Mobile 
+        function toggleDrawer() { document.getElementById('drawerMenu').classList.toggle('open'); }
+        function closeDrawer() { document.getElementById('drawerMenu').classList.remove('open'); }
+        
+        // Funções do Modal de Mesas
+        const modal = document.getElementById('mesaModal');
+        const form = document.getElementById('mesaForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const inputNome = document.getElementById('nome');
+        const statusField = document.getElementById('statusField');
+        const selectStatus = document.getElementById('status');
+
+        function openModal() {
+            modalTitle.textContent = "Cadastrar Mesa";
+            form.action = "/mesas"; // Endpoint padrão de criação
+            inputNome.value = "";
+            statusField.style.display = 'none'; // Oculta status na criação (Assume LIVRE)
+            selectStatus.value = "LIVRE";
+            modal.classList.add('open');
+        }
+        function editMesa(id, nome, status) {
+            modalTitle.textContent = "Editar Mesa";
+            form.action = "/mesas/editar/" + id; // Certifique-se que o controller Java esteja mapeado para receber isso
+            inputNome.value = nome;
+            statusField.style.display = 'flex'; // Exibe o status na edição
+            selectStatus.value = status;
+            modal.classList.add('open');
+        }
+        function closeModal() { modal.classList.remove('open'); }
+
+        const mobileRows = window.matchMedia('(max-width: 600px)');
+
+        document.querySelectorAll('.mesa-row').forEach(function(row) {
+            row.addEventListener('click', function(event) {
+                if (!mobileRows.matches || event.target.closest('button, form, a')) return;
+                const isOpen = this.classList.contains('actions-open');
+                document.querySelectorAll('.mesa-row.actions-open').forEach(function(openRow) {
+                    openRow.classList.remove('actions-open');
+                });
+                this.classList.toggle('actions-open', !isOpen);
+            });
+        });
+
+        document.querySelectorAll('.btn-edit-mesa').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+                editMesa(this.dataset.id, this.dataset.nome, this.dataset.status);
+            });
+        });
+
+        document.querySelectorAll('.btn-delete-mesa').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+                confirmDelete(this.dataset.id, this.dataset.nome);
+            });
+        });
+
+        // Funções do Modal de Exclusão
+        const deleteModal = document.getElementById('deleteModal');
+        let formToSubmit = null;
+
+        function confirmDelete(id, nome) {
+            document.getElementById('deleteMesaNumber').textContent = nome;
+            formToSubmit = document.getElementById('deleteForm-' + id);
+            deleteModal.classList.add('open');
+        }
+        function closeDeleteModal() {
+            deleteModal.classList.remove('open');
+            formToSubmit = null;
+        }
+        
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (formToSubmit) formToSubmit.submit();
+        });
+
+        // Ocultar alertas automaticamente após 5 segundos
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500); // Remove o elemento do DOM após a animação de fade
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

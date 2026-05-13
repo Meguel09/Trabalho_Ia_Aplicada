@@ -28,8 +28,8 @@ public class ContaService {
         Mesa mesa = mesaRepository.findById(request.mesaId())
                 .orElseThrow(() -> new NotFoundException("Mesa não encontrada."));
 
-        if (contaRepository.existsByMesaIdAndStatus(mesa.getId(), StatusConta.ABERTA)) {
-            throw new BusinessException("Já existe conta aberta para essa mesa.");
+        if (mesa.getStatus() == StatusMesa.FECHADA) {
+            throw new BusinessException("Mesa fechada não pode receber novo pedido.");
         }
 
         Conta conta = new Conta(
@@ -67,9 +67,13 @@ public class ContaService {
 
         conta.setStatus(StatusConta.FECHADA);
         conta.setFechadaEm(LocalDateTime.now());
-        conta.getMesa().setStatus(StatusMesa.FECHADA);
+        Conta contaSalva = contaRepository.save(conta);
+
+        boolean aindaTemContaAberta = contaRepository.findByMesaId(conta.getMesa().getId()).stream()
+                .anyMatch(c -> c.getStatus() == StatusConta.ABERTA);
+        conta.getMesa().setStatus(aindaTemContaAberta ? StatusMesa.OCUPADA : StatusMesa.FECHADA);
         mesaRepository.save(conta.getMesa());
-        return contaRepository.save(conta);
+        return contaSalva;
     }
 
     public Pagamento pagar(Long contaId, PagamentoRequest request) {
@@ -88,7 +92,7 @@ public class ContaService {
         StringBuilder sb = new StringBuilder();
         sb.append("====== CONTA DO BAR ======\n");
         sb.append("Conta: ").append(conta.getId()).append("\n");
-        sb.append("Mesa: ").append(conta.getMesa().getNumero()).append("\n");
+        sb.append("Mesa: ").append(conta.getMesa().getNome()).append("\n");
         sb.append("Cliente: ").append(conta.getCliente()).append("\n");
         sb.append("Status: ").append(conta.getStatus()).append("\n\n");
         sb.append("Itens:\n");

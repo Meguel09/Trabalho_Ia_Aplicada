@@ -61,6 +61,13 @@ public class PedidoService {
         Produto produto = produtoRepository.findById(request.produtoId())
                 .orElseThrow(() -> new NotFoundException("Produto não encontrado."));
         if (!produto.getAtivo()) throw new BusinessException("Produto inativo não pode ser vendido.");
+        ItemPedido itemExistente = itemPedidoRepository
+                .findByPedidoIdAndProdutoId(pedidoId, produto.getId())
+                .orElse(null);
+        if (itemExistente != null) {
+            itemExistente.setQuantidade(itemExistente.getQuantidade() + request.quantidade());
+            return itemPedidoRepository.save(itemExistente);
+        }
         return itemPedidoRepository.save(new ItemPedido(pedido, produto, request.quantidade()));
     }
 

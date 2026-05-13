@@ -10,7 +10,7 @@ public class Mesa {
     private Long id;
 
     @Column(nullable=false, unique=true)
-    private Integer numero;
+    private String nome;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
@@ -18,15 +18,15 @@ public class Mesa {
 
     public Mesa() {}
 
-    public Mesa(Integer numero) {
-        this.numero = numero;
+    public Mesa(String nome) {
+        this.nome = nome;
         this.status = StatusMesa.LIVRE;
     }
 
     public Long getId() { return id; }
-    public Integer getNumero() { return numero; }
+    public String getNome() { return nome; }
     public StatusMesa getStatus() { return status; }
 
-    public void setNumero(Integer numero) { this.numero = numero; }
+    public void setNome(String nome) { this.nome = nome; }
     public void setStatus(StatusMesa status) { this.status = status; }
 }

@@ -1,6 +1,11 @@
 package com.example.barcrud.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import com.example.barcrud.model.StatusMesa;
 
-public record MesaRequest(@NotNull @Min(1) Integer numero) {}
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record MesaRequest(
+    @NotBlank @Size(max = 60) String nome,
+    StatusMesa status
+) {}

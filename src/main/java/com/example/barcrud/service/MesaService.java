@@ -18,10 +18,11 @@ public class MesaService {
     }
 
     public Mesa criar(MesaRequest request) {
-        repository.findByNumero(request.numero()).ifPresent(m -> {
-            throw new BusinessException("Já existe uma mesa com esse número.");
+        String nome = request.nome().trim();
+        repository.findByNomeIgnoreCase(nome).ifPresent(m -> {
+            throw new BusinessException("Já existe uma mesa com esse nome.");
         });
-        return repository.save(new Mesa(request.numero()));
+        return repository.save(new Mesa(nome));
     }
 
     public List<Mesa> listar() { return repository.findAll(); }
@@ -34,10 +35,14 @@ public class MesaService {
 
     public Mesa atualizar(Long id, MesaRequest request) {
         Mesa mesa = buscar(id);
-        repository.findByNumero(request.numero()).ifPresent(m -> {
-            if (!m.getId().equals(id)) throw new BusinessException("Número de mesa já cadastrado.");
+        String nome = request.nome().trim();
+        repository.findByNomeIgnoreCase(nome).ifPresent(m -> {
+            if (!m.getId().equals(id)) throw new BusinessException("Nome de mesa já cadastrado.");
         });
-        mesa.setNumero(request.numero());
+        mesa.setNome(nome);
+        if (request.status() != null) {
+            mesa.setStatus(request.status());
+        }
         return repository.save(mesa);
     }
 

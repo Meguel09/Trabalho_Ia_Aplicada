@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MesaRepository extends JpaRepository<Mesa, Long> {
-    Optional<Mesa> findByNumero(Integer numero);
+    Optional<Mesa> findByNomeIgnoreCase(String nome);
     List<Mesa> findByStatus(StatusMesa status);
 }

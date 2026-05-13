@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos - Seriguela Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/pedidos.css}">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="container home-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="fruits">
+                    <svg width="40" height="40" viewBox="0 0 100 60">
+                        <circle cx="35" cy="35" r="20" fill="#E29B18" />
+                        <circle cx="65" cy="40" r="20" fill="#E29B18" />
+                        <path d="M40 20 Q50 5 65 15" stroke="#3F5513" stroke-width="4" fill="none" />
+                    </svg>
+                </div>
+                <h2><span class="seri">seri</span><span class="guela">guela</span></h2>
+            </div>
+            <button class="menu-toggle" aria-label="Abrir menu" onclick="toggleDrawer()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="menu">
+                <a th:href="@{/home}" class="menu-item"><i data-lucide="home"></i> Início</a>
+                <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                <a th:href="@{/pedidos}" class="menu-item active"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+            </nav>
+            <nav class="menu-drawer" id="drawerMenu">
+                <div class="menu">
+                    <a th:href="@{/home}" class="menu-item"><i data-lucide="home"></i> Início</a>
+                    <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                    <a th:href="@{/pedidos}" class="menu-item active"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                    <a th:href="@{/produtos}" class="menu-item"><i data-lucide="package"></i> Produtos</a>
+                    <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header header-actions">
+                <div>
+                    <h1>Pedidos</h1>
+                    <p class="subtitle">Acompanhe contas separadas por cliente, itens lançados e totais por mesa.</p>
+                </div>
+                <button class="btn-primary" onclick="openPedidoModal()"
+                        th:disabled="${#lists.isEmpty(mesasDisponiveis) || #lists.isEmpty(produtosAtivos)}">
+                    <i data-lucide="plus"></i> Adicionar Cliente
+                </button>
+            </header>
+
+            <div th:if="${successMessage}" class="alert alert-success">
+                <i data-lucide="check-circle"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close-alert" onclick="this.closest('.alert').remove()" aria-label="Fechar alerta">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error">
+                <i data-lucide="alert-circle"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close-alert" onclick="this.closest('.alert').remove()" aria-label="Fechar alerta">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <section class="summary-grid">
+                <div class="summary-tile">
+                    <span>Pedidos</span>
+                    <strong th:text="${#lists.size(pedidos)}">0</strong>
+                </div>
+                <div class="summary-tile">
+                    <span>Contas abertas</span>
+                    <strong th:text="${#lists.size(contasAbertas)}">0</strong>
+                </div>
+                <div class="summary-tile">
+                    <span>Mesas disponíveis</span>
+                    <strong th:text="${#lists.size(mesasDisponiveis)}">0</strong>
+                </div>
+            </section>
+
+            <section class="orders-list">
+                <article class="order-card"
+                         th:each="pedido : ${pedidos}"
+                         th:with="contaAberta=${pedido.conta.status.name() == 'ABERTA'}">
+                    <header class="order-card-header">
+                        <div>
+                            <span class="order-id" th:text="${'Pedido #' + pedido.id}">Pedido #1</span>
+                            <h2 th:text="${pedido.conta.mesa.nome}">Mesa 1</h2>
+                            <p th:text="${pedido.conta.cliente}">Cliente</p>
+                        </div>
+                        <span th:class="|badge badge-${#strings.toLowerCase(pedido.conta.status.name())}|"
+                              th:text="${pedido.conta.status}">ABERTA</span>
+                    </header>
+
+                    <div class="items-list" th:if="${!#lists.isEmpty(pedido.itens)}">
+                        <div class="item-row" th:each="item : ${pedido.itens}">
+                            <div class="item-main">
+                                <strong th:text="${item.produto.nome}">Produto</strong>
+                                <span th:text="${item.quantidade + 'x R$ ' + item.precoUnitario}">1x R$ 0.00</span>
+                            </div>
+                            <div class="item-total">
+                                <span th:text="${'R$ ' + item.total}">R$ 0.00</span>
+                                <form th:if="${contaAberta}" th:action="@{/pedidos/itens/{id}/remover(id=${item.id})}" method="POST">
+                                    <button type="submit" class="btn-icon btn-icon-danger" title="Remover item">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="empty-items" th:if="${#lists.isEmpty(pedido.itens)}">
+                        Nenhum item lançado.
+                    </div>
+
+                    <form class="add-item-form"
+                          th:if="${contaAberta && !#lists.isEmpty(produtosAtivos)}"
+                          th:action="@{/pedidos/{id}/itens(id=${pedido.id})}"
+                          method="POST">
+                        <select name="produtoId" required aria-label="Produto">
+                            <option value="" selected disabled>Produto</option>
+                            <option th:each="produto : ${produtosAtivos}"
+                                    th:value="${produto.id}"
+                                    th:text="${produto.nome + ' - R$ ' + produto.preco}">
+                                Produto
+                            </option>
+                        </select>
+                        <input type="number" name="quantidade" value="1" min="1" required aria-label="Quantidade">
+                        <button type="submit" class="btn-secondary compact">
+                            <i data-lucide="plus"></i> Item
+                        </button>
+                    </form>
+
+                    <footer class="order-footer">
+                        <div>
+                            <span>Total do pedido</span>
+                            <strong th:text="${'R$ ' + pedido.total}">R$ 0.00</strong>
+                        </div>
+                        <form th:if="${contaAberta}" th:action="@{/pedidos/contas/{id}/fechar(id=${pedido.conta.id})}" method="POST">
+                            <button type="submit" class="btn-primary compact">
+                                <i data-lucide="check"></i> Fechar conta
+                            </button>
+                        </form>
+                    </footer>
+                </article>
+
+                <div class="empty-state" th:if="${#lists.isEmpty(pedidos)}">
+                    <i data-lucide="receipt"></i>
+                    <h2>Nenhum pedido aberto</h2>
+                    <p>Abra um pedido para começar a lançar itens na mesa.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="pedidoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Cliente</h2>
+                <button type="button" class="btn-close" onclick="closePedidoModal()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form th:action="@{/pedidos/abrir}" method="POST">
+                <div class="input-field">
+                    <label for="mesaId">Mesa</label>
+                    <select id="mesaId" name="mesaId" required>
+                        <option value="" selected disabled>Selecione uma mesa</option>
+                        <option th:each="mesa : ${mesasDisponiveis}"
+                                th:value="${mesa.id}"
+                                th:text="${mesa.nome + ' - ' + mesa.status}">
+                            Mesa
+                        </option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <label for="cliente">Cliente</label>
+                    <input type="text" id="cliente" name="cliente" required maxlength="80" placeholder="Nome do cliente">
+                </div>
+                <div class="input-row">
+                    <label class="check-field">
+                        <input type="checkbox" name="individual" value="true" checked>
+                        <span>Conta individual</span>
+                    </label>
+                    <label class="check-field">
+                        <input type="checkbox" name="taxaServico" value="true">
+                        <span>Taxa de serviço</span>
+                    </label>
+                </div>
+                <div class="input-field">
+                    <label for="produtoId">Primeiro item</label>
+                    <select id="produtoId" name="produtoId" required>
+                        <option value="" selected disabled>Selecione um produto</option>
+                        <option th:each="produto : ${produtosAtivos}"
+                                th:value="${produto.id}"
+                                th:text="${produto.nome + ' - R$ ' + produto.preco}">
+                            Produto
+                        </option>
+                    </select>
+                </div>
+                <div class="input-field">
+                    <label for="quantidade">Quantidade</label>
+                    <input type="number" id="quantidade" name="quantidade" value="1" min="1" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closePedidoModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Abrir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleDrawer() { document.getElementById('drawerMenu').classList.toggle('open'); }
+        function closeDrawer() { document.getElementById('drawerMenu').classList.remove('open'); }
+
+        const pedidoModal = document.getElementById('pedidoModal');
+        function openPedidoModal() { pedidoModal.classList.add('open'); }
+        function closePedidoModal() { pedidoModal.classList.remove('open'); }
+
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
