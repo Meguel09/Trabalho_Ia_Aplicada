@@ -2,6 +2,7 @@ package com.example.barcrud.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,8 @@ import java.util.List;
 @Entity
 @Table(name = "contas")
 public class Conta {
+    private static final BigDecimal PERCENTUAL_TAXA_SERVICO = new BigDecimal("0.10");
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -68,17 +71,25 @@ public class Conta {
     public void setFechadaEm(LocalDateTime fechadaEm) { this.fechadaEm = fechadaEm; }
 
     public BigDecimal getSubtotal() {
-        return pedidos.stream()
+        BigDecimal subtotal = pedidos.stream()
                 .flatMap(p -> p.getItens().stream())
                 .map(ItemPedido::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return formatarMoeda(subtotal);
     }
 
     public BigDecimal getValorTaxaServico() {
-        return taxaServico ? getSubtotal().multiply(new BigDecimal("0.10")) : BigDecimal.ZERO;
+        if (!Boolean.TRUE.equals(taxaServico)) {
+            return formatarMoeda(BigDecimal.ZERO);
+        }
+        return formatarMoeda(getSubtotal().multiply(PERCENTUAL_TAXA_SERVICO));
     }
 
     public BigDecimal getTotal() {
-        return getSubtotal().add(getValorTaxaServico());
+        return formatarMoeda(getSubtotal().add(getValorTaxaServico()));
+    }
+
+    private BigDecimal formatarMoeda(BigDecimal valor) {
+        return valor.setScale(2, RoundingMode.HALF_UP);
     }
 }

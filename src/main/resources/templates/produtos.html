@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - Seriguela Bar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/produtos.css}">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="container home-container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="fruits">
+                    <svg width="40" height="40" viewBox="0 0 100 60">
+                        <circle cx="35" cy="35" r="20" fill="#E29B18" />
+                        <circle cx="65" cy="40" r="20" fill="#E29B18" />
+                        <path d="M40 20 Q50 5 65 15" stroke="#3F5513" stroke-width="4" fill="none" />
+                    </svg>
+                </div>
+                <h2><span class="seri">seri</span><span class="guela">guela</span></h2>
+            </div>
+            <button class="menu-toggle" aria-label="Abrir menu" onclick="toggleDrawer()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="menu">
+                <a th:href="@{/home}" class="menu-item"><i data-lucide="home"></i> Inicio</a>
+                <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                <a th:href="@{/produtos}" class="menu-item active"><i data-lucide="package"></i> Produtos</a>
+                <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+            </nav>
+            <nav class="menu-drawer" id="drawerMenu">
+                <div class="menu">
+                    <a th:href="@{/home}" class="menu-item"><i data-lucide="home"></i> Inicio</a>
+                    <a th:href="@{/mesas}" class="menu-item"><i data-lucide="users"></i> Mesas</a>
+                    <a th:href="@{/pedidos}" class="menu-item"><i data-lucide="shopping-cart"></i> Pedidos</a>
+                    <a th:href="@{/produtos}" class="menu-item active"><i data-lucide="package"></i> Produtos</a>
+                    <a th:href="@{/logout}" class="menu-item"><i data-lucide="log-out"></i> Sair</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header header-actions">
+                <div>
+                    <h1>Produtos</h1>
+                    <p class="subtitle">Cadastre itens, organize categorias e acompanhe o status do cardapio.</p>
+                </div>
+                <div class="header-buttons">
+                    <button type="button" class="btn-secondary" onclick="openCategoryModal()">
+                        <i data-lucide="tags"></i> Categorias
+                    </button>
+                    <button type="button" class="btn-primary" onclick="openProductModal()">
+                        <i data-lucide="plus"></i> Cadastrar Produto
+                    </button>
+                </div>
+            </header>
+
+            <div th:if="${successMessage}" class="alert alert-success">
+                <i data-lucide="check-circle"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close-alert" onclick="this.closest('.alert').remove()" aria-label="Fechar alerta">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error">
+                <i data-lucide="alert-circle"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close-alert" onclick="this.closest('.alert').remove()" aria-label="Fechar alerta">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form class="filters-panel" th:action="@{/produtos}" method="GET">
+                <div class="filter-field search-field">
+                    <label for="q">Buscar produto</label>
+                    <div class="search-box">
+                        <i data-lucide="search"></i>
+                        <input type="search" id="q" name="q" th:value="${q}" placeholder="Nome do produto">
+                    </div>
+                </div>
+                <div class="filter-field">
+                    <label for="ordem">Ordenar</label>
+                    <select id="ordem" name="ordem">
+                        <option value="id-asc" th:selected="${ordemSelecionada == 'id-asc'}">ID Menor - Maior</option>
+                        <option value="id-desc" th:selected="${ordemSelecionada == 'id-desc'}">ID Maior - Menor</option>
+                        <option value="nome-asc" th:selected="${ordemSelecionada == 'nome-asc'}">Nome A - Z</option>
+                        <option value="nome-desc" th:selected="${ordemSelecionada == 'nome-desc'}">Nome Z - A</option>
+                        <option value="preco-desc" th:selected="${ordemSelecionada == 'preco-desc'}">Maior preço</option>
+                        <option value="preco-asc" th:selected="${ordemSelecionada == 'preco-asc'}">Menor preço</option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="todos" th:selected="${statusSelecionado == 'todos'}">Todos</option>
+                        <option value="ativo" th:selected="${statusSelecionado == 'ativo'}">Ativo</option>
+                        <option value="inativo" th:selected="${statusSelecionado == 'inativo'}">Inativo</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn-primary compact"><i data-lucide="filter"></i> Filtrar</button>
+                    <a th:href="@{/produtos}" class="btn-secondary compact">Limpar</a>
+                </div>
+            </form>
+
+            <section class="product-summary" aria-label="Resumo de produtos">
+                <div class="summary-tile">
+                    <span>Total</span>
+                    <strong th:text="${totalProdutos}">0</strong>
+                </div>
+                <div class="summary-tile">
+                    <span>Ativos</span>
+                    <strong th:text="${produtosAtivos}">0</strong>
+                </div>
+                <div class="summary-tile">
+                    <span>Inativos</span>
+                    <strong th:text="${produtosInativos}">0</strong>
+                </div>
+            </section>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Status</th>
+                            <th>AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="product-row" th:each="produto : ${produtos}">
+                            <td class="product-id" th:text="${'#' + produto.id}">#1</td>
+                            <td class="product-name" th:text="${produto.nome}">Cerveja Lata</td>
+                            <td class="product-category" th:text="${produto.categoria}">Cervejas</td>
+                            <td class="product-price" th:text="${'R$ ' + produto.preco}">R$ 0.00</td>
+                            <td class="product-status">
+                                <span th:class="${produto.ativo} ? 'status-badge status-active' : 'status-badge status-inactive'"
+                                      th:text="${produto.ativo} ? 'ATIVO' : 'INATIVO'">ATIVO</span>
+                            </td>
+                            <td class="product-actions">
+                                <div class="product-actions-list">
+                                    <button type="button"
+                                            class="btn-icon btn-edit-product"
+                                            title="Editar"
+                                            th:data-id="${produto.id}"
+                                            th:data-nome="${produto.nome}"
+                                            th:data-categoria="${produto.categoria}"
+                                            th:data-preco="${produto.preco}"
+                                            th:data-ativo="${produto.ativo}">
+                                        <i data-lucide="edit-2"></i>
+                                    </button>
+                                    <form th:id="|deleteProductForm-${produto.id}|"
+                                          th:action="@{/produtos/excluir/{id}(id=${produto.id})}"
+                                          method="POST">
+                                        <button type="button"
+                                                class="btn-icon btn-icon-danger btn-delete-product"
+                                                title="Excluir"
+                                                th:data-id="${produto.id}"
+                                                th:data-nome="${produto.nome}">
+                                            <i data-lucide="trash-2"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="empty-row" th:if="${#lists.isEmpty(produtos)}">
+                            <td colspan="6">Nenhum produto encontrado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="productModalTitle">Cadastrar Produto</h2>
+                <button type="button" class="btn-close" onclick="closeProductModal()" aria-label="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="productForm" th:action="@{/produtos}" method="POST">
+                <div class="input-field">
+                    <label for="nome">Nome</label>
+                    <input type="text" id="nome" name="nome" required maxlength="80" placeholder="Ex: Caipirinha">
+                </div>
+                <div class="input-field two-columns">
+                    <div>
+                        <label for="preco">Preço</label>
+                        <input type="number" id="preco" name="preco" min="0.01" step="0.01" required placeholder="0.00">
+                    </div>
+                    <div>
+                        <label for="ativo">Status</label>
+                        <select id="ativo" name="ativo">
+                            <option value="true">Ativo</option>
+                            <option value="false">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-field">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" name="categoria" required>
+                        <option value="" selected disabled>Selecione</option>
+                        <option th:each="categoria : ${categorias}" th:value="${categoria}" th:text="${categoria}">Categoria</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeProductModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="categoryModal" class="modal">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h2 id="categoryModalTitle">Categorias</h2>
+                <button type="button" class="btn-close" onclick="closeCategoryModal()" aria-label="Fechar">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <form id="categoryForm" class="category-form" th:action="@{/produtos/categorias}" method="POST">
+                <input type="hidden" id="nomeAtual" name="nomeAtual">
+                <div class="input-field">
+                    <label for="categoryName">Nome da categoria</label>
+                    <input type="text" id="categoryName" name="nome" required maxlength="60" placeholder="Ex: Cervejas">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="resetCategoryForm()">Novo</button>
+                    <button type="submit" class="btn-primary" id="categorySubmitLabel">Salvar</button>
+                </div>
+            </form>
+
+            <div class="category-list">
+                <div class="category-row" th:each="categoria : ${categorias}">
+                    <span th:text="${categoria}">Cervejas</span>
+                    <div class="category-actions">
+                        <button type="button"
+                                class="btn-icon btn-edit-category"
+                                title="Editar categoria"
+                                th:data-nome="${categoria}">
+                            <i data-lucide="edit-2"></i>
+                        </button>
+                        <form th:action="@{/produtos/categorias/excluir}" method="POST">
+                            <input type="hidden" name="nome" th:value="${categoria}">
+                            <button type="submit" class="btn-icon btn-icon-danger" title="Excluir categoria">
+                                <i data-lucide="trash-2"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <p class="empty-category" th:if="${#lists.isEmpty(categorias)}">Nenhuma categoria cadastrada.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="deleteProductModal" class="modal">
+        <div class="modal-content modal-text-center">
+            <div class="modal-icon-warning">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <h2>Excluir produto?</h2>
+            <p>Tem certeza que deseja excluir <strong id="deleteProductName"></strong>?</p>
+            <div class="modal-actions center">
+                <button type="button" class="btn-secondary" onclick="closeDeleteProductModal()">Cancelar</button>
+                <button type="button" class="btn-primary" id="confirmDeleteProductBtn">Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        if (window.lucide) lucide.createIcons();
+
+        function toggleDrawer() { document.getElementById('drawerMenu').classList.toggle('open'); }
+        function closeDrawer() { document.getElementById('drawerMenu').classList.remove('open'); }
+
+        const productModal = document.getElementById('productModal');
+        const productForm = document.getElementById('productForm');
+        const productModalTitle = document.getElementById('productModalTitle');
+        const nomeInput = document.getElementById('nome');
+        const precoInput = document.getElementById('preco');
+        const categoriaSelect = document.getElementById('categoria');
+        const ativoSelect = document.getElementById('ativo');
+
+        function openProductModal() {
+            productModalTitle.textContent = 'Cadastrar Produto';
+            productForm.action = '/produtos';
+            productForm.reset();
+            ativoSelect.value = 'true';
+            productModal.classList.add('open');
+        }
+
+        function closeProductModal() {
+            productModal.classList.remove('open');
+        }
+
+        function ensureCategoryOption(value) {
+            const exists = Array.from(categoriaSelect.options).some(function(option) {
+                return option.value === value;
+            });
+            if (!exists && value) {
+                const option = new Option(value, value);
+                categoriaSelect.appendChild(option);
+            }
+        }
+
+        function editProduct(button) {
+            const id = button.dataset.id;
+            const categoria = button.dataset.categoria;
+            productModalTitle.textContent = 'Editar Produto';
+            productForm.action = '/produtos/editar/' + id;
+            nomeInput.value = button.dataset.nome;
+            precoInput.value = button.dataset.preco;
+            ensureCategoryOption(categoria);
+            categoriaSelect.value = categoria;
+            ativoSelect.value = button.dataset.ativo;
+            productModal.classList.add('open');
+        }
+
+        const categoryModal = document.getElementById('categoryModal');
+        const categoryForm = document.getElementById('categoryForm');
+        const categoryName = document.getElementById('categoryName');
+        const categoryCurrentName = document.getElementById('nomeAtual');
+        const categorySubmitLabel = document.getElementById('categorySubmitLabel');
+
+        function openCategoryModal() {
+            resetCategoryForm();
+            categoryModal.classList.add('open');
+        }
+
+        function closeCategoryModal() {
+            categoryModal.classList.remove('open');
+        }
+
+        function resetCategoryForm() {
+            categoryForm.action = '/produtos/categorias';
+            categoryCurrentName.value = '';
+            categoryName.value = '';
+            categorySubmitLabel.textContent = 'Salvar';
+            categoryName.focus();
+        }
+
+        function editCategory(nome) {
+            categoryForm.action = '/produtos/categorias/editar';
+            categoryCurrentName.value = nome;
+            categoryName.value = nome;
+            categorySubmitLabel.textContent = 'Atualizar';
+            categoryName.focus();
+        }
+
+        const deleteProductModal = document.getElementById('deleteProductModal');
+        let productFormToSubmit = null;
+
+        function confirmDeleteProduct(id, nome) {
+            document.getElementById('deleteProductName').textContent = nome;
+            productFormToSubmit = document.getElementById('deleteProductForm-' + id);
+            deleteProductModal.classList.add('open');
+        }
+
+        function closeDeleteProductModal() {
+            deleteProductModal.classList.remove('open');
+            productFormToSubmit = null;
+        }
+
+        document.getElementById('confirmDeleteProductBtn').addEventListener('click', function() {
+            if (productFormToSubmit) productFormToSubmit.submit();
+        });
+
+        document.querySelectorAll('.btn-edit-product').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+                editProduct(this);
+            });
+        });
+
+        document.querySelectorAll('.btn-delete-product').forEach(function(button) {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+                confirmDeleteProduct(this.dataset.id, this.dataset.nome);
+            });
+        });
+
+        document.querySelectorAll('.btn-edit-category').forEach(function(button) {
+            button.addEventListener('click', function() {
+                editCategory(this.dataset.nome);
+            });
+        });
+
+        const mobileRows = window.matchMedia('(max-width: 600px)');
+        document.querySelectorAll('.product-row').forEach(function(row) {
+            row.addEventListener('click', function(event) {
+                if (!mobileRows.matches || event.target.closest('button, form, a')) return;
+                const isOpen = this.classList.contains('actions-open');
+                document.querySelectorAll('.product-row.actions-open').forEach(function(openRow) {
+                    openRow.classList.remove('actions-open');
+                });
+                this.classList.toggle('actions-open', !isOpen);
+            });
+        });
+
+        document.querySelectorAll('.modal').forEach(function(modal) {
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) modal.classList.remove('open');
+            });
+        });
+
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

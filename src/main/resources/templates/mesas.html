@@ -55,12 +55,11 @@
 
         <!-- CONTEÚDO PRINCIPAL -->
         <main class="main-content">
-            <header class="main-header header-actions">
+            <header class="main-header">
                 <div>
-                    <h1>Mesas 🪑</h1>
+                    <h1>Mesas</h1>
                     <p class="subtitle">Cadastre, edite e acompanhe o status das mesas.</p>
                 </div>
-                <button class="btn-primary" onclick="openModal()"><i data-lucide="plus"></i> Cadastrar Mesa</button>
             </header>
 
             <!-- Alertas de Sucesso e Erro -->
@@ -76,6 +75,62 @@
                     <i data-lucide="x" style="width: 20px; height: 20px;"></i>
                 </button>
             </div>
+
+            <div class="page-actions">
+                <button class="btn-primary" onclick="openModal()"><i data-lucide="plus"></i> Cadastrar Mesa</button>
+            </div>
+
+            <form class="filters-panel" th:action="@{/mesas}" method="GET">
+                <div class="filter-field search-field">
+                    <label for="q">Buscar</label>
+                    <div class="search-box">
+                        <i data-lucide="search"></i>
+                        <input type="search" id="q" name="q" th:value="${q}" placeholder="Nome da mesa">
+                    </div>
+                </div>
+                <div class="filter-field">
+                    <label for="statusFilter">Status</label>
+                    <select id="statusFilter" name="status">
+                        <option value="" th:selected="${statusSelecionado == null}">Todos</option>
+                        <option th:each="statusOption : ${statusOptions}"
+                                th:value="${statusOption}"
+                                th:selected="${statusSelecionado == statusOption}"
+                                th:text="${statusOption.name() == 'LIVRE' ? 'Livre' : (statusOption.name() == 'OCUPADA' ? 'Ocupada' : 'Fechada')}">
+                            Livre
+                        </option>
+                    </select>
+                </div>
+                <div class="filter-field">
+                    <label for="ordem">Ordenar</label>
+                    <select id="ordem" name="ordem">
+                        <option value="nome-asc" th:selected="${ordemSelecionada == 'nome-asc'}">Nome A - Z</option>
+                        <option value="nome-desc" th:selected="${ordemSelecionada == 'nome-desc'}">Nome Z - A</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn-primary compact"><i data-lucide="filter"></i> Filtrar</button>
+                    <a th:href="@{/mesas}" class="btn-secondary compact">Limpar</a>
+                </div>
+            </form>
+
+            <section class="mesa-summary" aria-label="Resumo de mesas">
+                <div class="summary-tile">
+                    <span>Total</span>
+                    <strong th:text="${totalMesas}">0</strong>
+                </div>
+                <div class="summary-tile">
+                    <span>Livres</span>
+                    <strong th:text="${mesasLivres}">0</strong>
+                </div>
+                <div class="summary-tile">
+                    <span>Ocupadas</span>
+                    <strong th:text="${mesasOcupadas}">0</strong>
+                </div>
+                <div class="summary-tile">
+                    <span>Fechadas</span>
+                    <strong th:text="${mesasFechadas}">0</strong>
+                </div>
+            </section>
 
             <div class="table-container">
                 <table class="data-table">

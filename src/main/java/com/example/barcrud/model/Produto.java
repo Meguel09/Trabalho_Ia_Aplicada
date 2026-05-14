@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 @Table(name = "produtos")
 public class Produto {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable=false)
@@ -38,6 +37,7 @@ public class Produto {
     public Boolean getAtivo() { return ativo; }
 
     public void setNome(String nome) { this.nome = nome; }
+    public void setId(Long id) { this.id = id; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
     public void setPreco(BigDecimal preco) { this.preco = preco; }
     public void setAtivo(Boolean ativo) { this.ativo = ativo; }

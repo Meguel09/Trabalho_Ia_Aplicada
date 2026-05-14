@@ -1,6 +1,8 @@
 package com.example.barcrud.controller;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,9 +31,31 @@ public class MesaController {
     public MesaController(MesaService service) { this.service = service; }
 
     @GetMapping
-    public String listar(@RequestParam(required=false) StatusMesa status, Model model) {
-        List<Mesa> mesas = status == null ? service.listar() : service.listarPorStatus(status);
+    public String listar(@RequestParam(required=false) String q,
+                         @RequestParam(required=false) StatusMesa status,
+                         @RequestParam(defaultValue = "nome-asc") String ordem,
+                         Model model) {
+        List<Mesa> todasMesas = service.listar();
+        String termo = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
+        Comparator<Mesa> comparador = "nome-desc".equals(ordem)
+                ? Comparator.comparing(Mesa::getNome, String.CASE_INSENSITIVE_ORDER).reversed()
+                : Comparator.comparing(Mesa::getNome, String.CASE_INSENSITIVE_ORDER);
+
+        List<Mesa> mesas = todasMesas.stream()
+                .filter(mesa -> status == null || mesa.getStatus() == status)
+                .filter(mesa -> termo.isBlank() || mesa.getNome().toLowerCase(Locale.ROOT).contains(termo))
+                .sorted(comparador.thenComparing(Mesa::getId))
+                .toList();
+
         model.addAttribute("mesas", mesas);
+        model.addAttribute("totalMesas", todasMesas.size());
+        model.addAttribute("mesasLivres", todasMesas.stream().filter(mesa -> mesa.getStatus() == StatusMesa.LIVRE).count());
+        model.addAttribute("mesasOcupadas", todasMesas.stream().filter(mesa -> mesa.getStatus() == StatusMesa.OCUPADA).count());
+        model.addAttribute("mesasFechadas", todasMesas.stream().filter(mesa -> mesa.getStatus() == StatusMesa.FECHADA).count());
+        model.addAttribute("q", q == null ? "" : q);
+        model.addAttribute("statusSelecionado", status);
+        model.addAttribute("ordemSelecionada", ordem);
+        model.addAttribute("statusOptions", StatusMesa.values());
         return "mesas";
     }
 
@@ -70,8 +94,10 @@ public class MesaController {
         try {
             service.excluir(id);
             redirectAttributes.addFlashAttribute("successMessage", "Mesa excluída com sucesso!");
-        } catch (Exception e) {
+        } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Não foi possível excluir a mesa.");
         }
         return "redirect:/mesas";
     }

@@ -5,6 +5,7 @@ import com.example.barcrud.exception.BusinessException;
 import com.example.barcrud.exception.NotFoundException;
 import com.example.barcrud.model.Mesa;
 import com.example.barcrud.model.StatusMesa;
+import com.example.barcrud.repository.ContaRepository;
 import com.example.barcrud.repository.MesaRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.List;
 @Service
 public class MesaService {
     private final MesaRepository repository;
+    private final ContaRepository contaRepository;
 
-    public MesaService(MesaRepository repository) {
+    public MesaService(MesaRepository repository, ContaRepository contaRepository) {
         this.repository = repository;
+        this.contaRepository = contaRepository;
     }
 
     public Mesa criar(MesaRequest request) {
@@ -48,6 +51,9 @@ public class MesaService {
 
     public void excluir(Long id) {
         Mesa mesa = buscar(id);
+        if (contaRepository.existsByMesaId(id)) {
+            throw new BusinessException("Não é possível excluir uma mesa com contas vinculadas.");
+        }
         repository.delete(mesa);
     }
 }

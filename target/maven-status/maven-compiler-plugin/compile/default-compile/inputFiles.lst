@@ -14,6 +14,7 @@ C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\exampl
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\exception\BusinessException.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\exception\GlobalExceptionHandler.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\exception\NotFoundException.java
+C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\Categoria.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\Conta.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\ItemPedido.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\Mesa.java
@@ -23,6 +24,7 @@ C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\exampl
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\StatusConta.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\StatusMesa.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\model\Usuario.java
+C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\CategoriaRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\ContaRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\ItemPedidoRepository.java
 C:\Users\farof\OneDrive\Documentos\Trabalho_Ia_Aplicada\src\main\java\com\example\barcrud\repository\MesaRepository.java

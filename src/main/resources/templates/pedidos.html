@@ -49,15 +49,11 @@
         </aside>
 
         <main class="main-content">
-            <header class="main-header header-actions">
+            <header class="main-header">
                 <div>
                     <h1>Pedidos</h1>
                     <p class="subtitle">Contas separadas por cliente, agrupadas por mesa.</p>
                 </div>
-                <button class="btn-primary" onclick="openPedidoModal()"
-                        th:disabled="${#lists.isEmpty(mesasDisponiveis) || #lists.isEmpty(produtosAtivos)}">
-                    <i data-lucide="plus"></i> Adicionar Cliente
-                </button>
             </header>
 
             <div th:if="${successMessage}" class="alert alert-success">
@@ -70,6 +66,13 @@
                 <i data-lucide="alert-circle"></i> <span th:text="${errorMessage}"></span>
                 <button type="button" class="btn-close-alert" onclick="this.closest('.alert').remove()" aria-label="Fechar alerta">
                     <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <div class="page-actions">
+                <button class="btn-primary" onclick="openPedidoModal()"
+                        th:disabled="${#lists.isEmpty(mesasDisponiveis) || #lists.isEmpty(produtosAtivos)}">
+                    <i data-lucide="plus"></i> Adicionar Cliente
                 </button>
             </div>
 
@@ -100,7 +103,7 @@
                         <option th:each="statusOption : ${statusPedidoOptions}"
                                 th:value="${statusOption}"
                                 th:selected="${statusSelecionado == statusOption}"
-                                th:text="${statusOption}">
+                                th:text="${statusOption.name() == 'ABERTA' ? 'Aberto' : 'Fechado'}">
                             ABERTA
                         </option>
                     </select>
@@ -127,7 +130,7 @@
             </section>
 
             <section class="mesa-grid">
-                <article class="mesa-card" th:each="mesaPedido : ${mesasPedidos}">
+                <article class="mesa-card" th:each="mesaPedido : ${mesasPedidos}" th:id="|mesa-card-${mesaPedido.mesa.id}|">
                     <header class="mesa-card-header">
                         <div>
                             <span class="order-id" th:text="${mesaPedido.clientesAbertos + ' contas abertas'}">0 contas abertas</span>
@@ -174,7 +177,8 @@
             <div class="modal-header">
                 <div>
                     <h2 th:text="${mesaPedido.mesa.nome}">Mesa</h2>
-                    <p th:text="${'Saldo restante: R$ ' + mesaPedido.totalAberto + ' | Pago: R$ ' + mesaPedido.totalFechado}">
+                    <p th:id="|mesa-totals-${mesaPedido.mesa.id}|"
+                       th:text="${'Saldo restante: R$ ' + mesaPedido.totalAberto + ' | Pago: R$ ' + mesaPedido.totalFechado}">
                         Saldo restante
                     </p>
                 </div>
@@ -183,8 +187,9 @@
                 </button>
             </div>
 
-            <section class="client-list">
+            <section class="client-list" th:id="|client-list-${mesaPedido.mesa.id}|">
                 <article class="client-card"
+                         th:id="|client-card-${conta.id}|"
                          th:each="conta : ${mesaPedido.contas}"
                          th:with="contaAberta=${conta.status.name() == 'ABERTA'}">
                     <header class="client-card-header">
@@ -198,16 +203,16 @@
 
                     <div class="client-total">
                         <span>Total individual</span>
-                        <strong th:text="${'R$ ' + conta.total}">R$ 0.00</strong>
+                        <strong th:id="|conta-total-${conta.id}|" th:text="${'R$ ' + conta.total}">R$ 0.00</strong>
                     </div>
 
                     <div class="pedido-group" th:each="pedido : ${conta.pedidos}">
                         <div class="pedido-title">
                             <strong th:text="${'Pedido #' + pedido.id}">Pedido #1</strong>
-                            <span th:text="${'R$ ' + pedido.total}">R$ 0.00</span>
+                            <span th:id="|pedido-total-${pedido.id}|" th:text="${'R$ ' + pedido.total}">R$ 0.00</span>
                         </div>
-                        <div class="items-list" th:if="${!#lists.isEmpty(pedido.itens)}">
-                            <div class="item-row" th:each="item : ${pedido.itens}">
+                        <div class="items-list" th:id="|items-list-${pedido.id}|">
+                            <div class="item-row" th:each="item : ${pedido.itens}" th:id="|item-row-${item.id}|">
                                 <div class="item-main">
                                     <strong th:text="${item.produto.nome}">Produto</strong>
                                     <span th:text="${item.quantidade + 'x R$ ' + item.precoUnitario}">1x R$ 0.00</span>
@@ -215,6 +220,7 @@
                                 <div class="item-total">
                                     <span th:text="${'R$ ' + item.total}">R$ 0.00</span>
                                     <form th:if="${contaAberta}" th:action="@{/pedidos/itens/{id}/remover(id=${item.id})}" method="POST">
+                                        <input type="hidden" name="manterMesaModalId" th:value="${mesaPedido.mesa.id}">
                                         <button type="submit" class="btn-icon btn-icon-danger" title="Remover item">
                                             <i data-lucide="trash-2"></i>
                                         </button>
@@ -222,12 +228,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="empty-items" th:if="${#lists.isEmpty(pedido.itens)}">Nenhum item lançado.</div>
+                        <div class="empty-items" th:id="|empty-items-${pedido.id}|" th:if="${#lists.isEmpty(pedido.itens)}">Nenhum item lançado.</div>
 
                         <form class="add-item-form"
                               th:if="${contaAberta && !#lists.isEmpty(produtosAtivos)}"
                               th:action="@{/pedidos/{id}/itens(id=${pedido.id})}"
                               method="POST">
+                            <input type="hidden" name="manterMesaModalId" th:value="${mesaPedido.mesa.id}">
                             <select name="produtoId" required aria-label="Produto">
                                 <option value="" selected disabled>Produto</option>
                                 <option th:each="produto : ${produtosAtivos}"
@@ -244,12 +251,14 @@
                     </div>
 
                     <footer class="client-actions" th:if="${contaAberta}">
-                        <form th:action="@{/pedidos/contas/{id}/novo(id=${conta.id})}" method="POST">
+                        <form class="new-order-form" th:action="@{/pedidos/contas/{id}/novo(id=${conta.id})}" method="POST">
+                            <input type="hidden" name="manterMesaModalId" th:value="${mesaPedido.mesa.id}">
                             <button type="submit" class="btn-secondary compact">
                                 <i data-lucide="receipt"></i> Novo pedido
                             </button>
                         </form>
                         <form th:action="@{/pedidos/contas/{id}/fechar(id=${conta.id})}" method="POST">
+                            <input type="hidden" name="manterMesaModalId" th:value="${mesaPedido.mesa.id}">
                             <button type="submit" class="btn-primary compact">
                                 <i data-lucide="check"></i> Fechar conta individual
                             </button>
@@ -261,8 +270,9 @@
             <section class="new-client-box"
                      th:if="${mesaPedido.mesa.status.name() != 'FECHADA' && !#lists.isEmpty(produtosAtivos)}">
                 <h3>Novo cliente nesta mesa</h3>
-                <form th:action="@{/pedidos/abrir}" method="POST">
+                <form class="new-client-inline-form" th:action="@{/pedidos/abrir}" method="POST">
                     <input type="hidden" name="mesaId" th:value="${mesaPedido.mesa.id}">
+                    <input type="hidden" name="manterMesaModalId" th:value="${mesaPedido.mesa.id}">
                     <input type="text" name="cliente" required maxlength="80" placeholder="Nome do cliente">
                     <select name="produtoId" required>
                         <option value="" selected disabled>Primeiro item</option>
@@ -336,8 +346,14 @@
         </div>
     </div>
 
-    <script>
-        lucide.createIcons();
+    <script th:inline="javascript">
+        function refreshIcons() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+
+        refreshIcons();
 
         function toggleDrawer() { document.getElementById('drawerMenu').classList.toggle('open'); }
         function closeDrawer() { document.getElementById('drawerMenu').classList.remove('open'); }
@@ -347,18 +363,415 @@
         function closePedidoModal() { pedidoModal.classList.remove('open'); }
 
         function openMesaModal(id) {
-            document.getElementById('mesaModal-' + id).classList.add('open');
+            const modal = document.getElementById('mesaModal-' + id);
+            if (modal) modal.classList.add('open');
         }
 
         function closeMesaModal(id) {
-            document.getElementById('mesaModal-' + id).classList.remove('open');
+            const modal = document.getElementById('mesaModal-' + id);
+            if (modal) modal.classList.remove('open');
         }
 
-        document.querySelectorAll('.modal').forEach(function(modal) {
-            modal.addEventListener('click', function(event) {
-                if (event.target === modal) modal.classList.remove('open');
+        function bindModalBackdrops() {
+            document.querySelectorAll('.modal').forEach(function(modal) {
+                if (modal.dataset.backdropBound) return;
+                modal.dataset.backdropBound = 'true';
+                modal.addEventListener('click', function(event) {
+                    if (event.target === modal) modal.classList.remove('open');
+                });
             });
-        });
+        }
+
+        function setFormLoading(form, loading) {
+            const submitButton = form.querySelector('button[type="submit"]');
+            form.dataset.loading = loading ? 'true' : 'false';
+
+            if (submitButton) {
+                submitButton.disabled = loading;
+            }
+        }
+
+        function dinheiro(valor) {
+            return 'R$ ' + valor;
+        }
+
+        function setTextById(id, value) {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        }
+
+        function updateItemRow(row, data) {
+            row.querySelector('.item-main strong').textContent = data.produtoNome;
+            row.querySelector('.item-main span').textContent = data.quantidade + 'x ' + dinheiro(data.precoUnitario);
+            row.querySelector('.item-total > span').textContent = dinheiro(data.itemTotal);
+        }
+
+        function buildItemRow(data) {
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            row.id = 'item-row-' + data.itemId;
+
+            const itemMain = document.createElement('div');
+            itemMain.className = 'item-main';
+
+            const itemName = document.createElement('strong');
+            const itemMeta = document.createElement('span');
+            itemMain.append(itemName, itemMeta);
+
+            const itemTotal = document.createElement('div');
+            itemTotal.className = 'item-total';
+
+            const totalText = document.createElement('span');
+            const removeForm = document.createElement('form');
+            removeForm.method = 'POST';
+            removeForm.action = '/pedidos/itens/' + data.itemId + '/remover';
+
+            const mesaInput = document.createElement('input');
+            mesaInput.type = 'hidden';
+            mesaInput.name = 'manterMesaModalId';
+            mesaInput.value = data.mesaId;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'submit';
+            removeButton.className = 'btn-icon btn-icon-danger';
+            removeButton.title = 'Remover item';
+
+            const removeIcon = document.createElement('i');
+            removeIcon.setAttribute('data-lucide', 'trash-2');
+            removeButton.appendChild(removeIcon);
+            removeForm.append(mesaInput, removeButton);
+            itemTotal.append(totalText, removeForm);
+
+            row.append(itemMain, itemTotal);
+            updateItemRow(row, data);
+            return row;
+        }
+
+        function cloneProdutoSelect(sourceSelect) {
+            const select = sourceSelect ? sourceSelect.cloneNode(true) : document.createElement('select');
+            select.name = 'produtoId';
+            select.required = true;
+            select.setAttribute('aria-label', 'Produto');
+            select.selectedIndex = 0;
+            return select;
+        }
+
+        function buildAddItemForm(data, sourceSelect) {
+            const form = document.createElement('form');
+            form.className = 'add-item-form';
+            form.method = 'POST';
+            form.action = '/pedidos/' + data.pedidoId + '/itens';
+
+            const mesaInput = document.createElement('input');
+            mesaInput.type = 'hidden';
+            mesaInput.name = 'manterMesaModalId';
+            mesaInput.value = data.mesaId;
+
+            const select = cloneProdutoSelect(sourceSelect);
+
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.name = 'quantidade';
+            quantityInput.value = '1';
+            quantityInput.defaultValue = '1';
+            quantityInput.min = '1';
+            quantityInput.required = true;
+            quantityInput.setAttribute('aria-label', 'Quantidade');
+
+            const button = document.createElement('button');
+            button.type = 'submit';
+            button.className = 'btn-secondary compact';
+
+            const icon = document.createElement('i');
+            icon.setAttribute('data-lucide', 'plus');
+            button.append(icon, document.createTextNode(' Item'));
+
+            form.append(mesaInput, select, quantityInput, button);
+            return form;
+        }
+
+        function buildPedidoGroup(data, sourceSelect, itemData) {
+            const group = document.createElement('div');
+            group.className = 'pedido-group';
+
+            const title = document.createElement('div');
+            title.className = 'pedido-title';
+
+            const titleText = document.createElement('strong');
+            titleText.textContent = 'Pedido #' + data.pedidoId;
+
+            const totalText = document.createElement('span');
+            totalText.id = 'pedido-total-' + data.pedidoId;
+            totalText.textContent = dinheiro(data.pedidoTotal);
+
+            title.append(titleText, totalText);
+
+            const itemsList = document.createElement('div');
+            itemsList.className = 'items-list';
+            itemsList.id = 'items-list-' + data.pedidoId;
+            let emptyItems = null;
+
+            if (itemData) {
+                itemsList.appendChild(buildItemRow(itemData));
+            } else {
+                emptyItems = document.createElement('div');
+                emptyItems.className = 'empty-items';
+                emptyItems.id = 'empty-items-' + data.pedidoId;
+                emptyItems.textContent = 'Nenhum item lançado.';
+            }
+
+            group.append(title, itemsList);
+            if (emptyItems) group.appendChild(emptyItems);
+            group.appendChild(buildAddItemForm(data, sourceSelect));
+            return group;
+        }
+
+        function buildNewOrderForm(data) {
+            const form = document.createElement('form');
+            form.className = 'new-order-form';
+            form.method = 'POST';
+            form.action = '/pedidos/contas/' + data.contaId + '/novo';
+
+            const mesaInput = document.createElement('input');
+            mesaInput.type = 'hidden';
+            mesaInput.name = 'manterMesaModalId';
+            mesaInput.value = data.mesaId;
+
+            const button = document.createElement('button');
+            button.type = 'submit';
+            button.className = 'btn-secondary compact';
+
+            const icon = document.createElement('i');
+            icon.setAttribute('data-lucide', 'receipt');
+            button.append(icon, document.createTextNode(' Novo pedido'));
+
+            form.append(mesaInput, button);
+            return form;
+        }
+
+        function buildCloseAccountForm(data) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/pedidos/contas/' + data.contaId + '/fechar';
+
+            const mesaInput = document.createElement('input');
+            mesaInput.type = 'hidden';
+            mesaInput.name = 'manterMesaModalId';
+            mesaInput.value = data.mesaId;
+
+            const button = document.createElement('button');
+            button.type = 'submit';
+            button.className = 'btn-primary compact';
+
+            const icon = document.createElement('i');
+            icon.setAttribute('data-lucide', 'check');
+            button.append(icon, document.createTextNode(' Fechar conta individual'));
+
+            form.append(mesaInput, button);
+            return form;
+        }
+
+        function buildClientCard(data, sourceSelect) {
+            const card = document.createElement('article');
+            card.className = 'client-card';
+            card.id = 'client-card-' + data.contaId;
+
+            const header = document.createElement('header');
+            header.className = 'client-card-header';
+
+            const headerText = document.createElement('div');
+            const orderId = document.createElement('span');
+            orderId.className = 'order-id';
+            orderId.textContent = 'Conta #' + data.contaId;
+            const title = document.createElement('h3');
+            title.textContent = data.cliente;
+            headerText.append(orderId, title);
+
+            const badge = document.createElement('span');
+            badge.className = 'badge badge-aberta';
+            badge.textContent = data.status;
+            header.append(headerText, badge);
+
+            const total = document.createElement('div');
+            total.className = 'client-total';
+            const totalLabel = document.createElement('span');
+            totalLabel.textContent = 'Total individual';
+            const totalValue = document.createElement('strong');
+            totalValue.id = 'conta-total-' + data.contaId;
+            totalValue.textContent = dinheiro(data.contaTotal);
+            total.append(totalLabel, totalValue);
+
+            const actions = document.createElement('footer');
+            actions.className = 'client-actions';
+            actions.append(buildNewOrderForm(data), buildCloseAccountForm(data));
+
+            card.append(header, total, buildPedidoGroup(data, sourceSelect, data), actions);
+            return card;
+        }
+
+        function applyItemUpdate(data) {
+            setTextById('mesa-totals-' + data.mesaId, 'Saldo restante: ' + dinheiro(data.mesaTotalAberto) + ' | Pago: ' + dinheiro(data.mesaTotalFechado));
+            setTextById('conta-total-' + data.contaId, dinheiro(data.contaTotal));
+            setTextById('pedido-total-' + data.pedidoId, dinheiro(data.pedidoTotal));
+
+            const emptyItems = document.getElementById('empty-items-' + data.pedidoId);
+            if (emptyItems) emptyItems.remove();
+
+            const itemsList = document.getElementById('items-list-' + data.pedidoId);
+            if (!itemsList) return false;
+
+            let itemRow = document.getElementById('item-row-' + data.itemId);
+            if (itemRow) {
+                updateItemRow(itemRow, data);
+            } else {
+                itemRow = buildItemRow(data);
+                itemsList.appendChild(itemRow);
+            }
+
+            return true;
+        }
+
+        function applyNewOrder(data, form) {
+            const clientCard = document.getElementById('client-card-' + data.contaId);
+            if (!clientCard) return false;
+
+            const sourceSelect = clientCard.querySelector('.add-item-form select[name="produtoId"]');
+            const actions = clientCard.querySelector('.client-actions');
+            clientCard.insertBefore(buildPedidoGroup(data, sourceSelect), actions);
+            return true;
+        }
+
+        function applyNewClient(data, form) {
+            setTextById('mesa-totals-' + data.mesaId, 'Saldo restante: ' + dinheiro(data.mesaTotalAberto) + ' | Pago: ' + dinheiro(data.mesaTotalFechado));
+
+            const clientList = document.getElementById('client-list-' + data.mesaId);
+            if (!clientList) return false;
+
+            const sourceSelect = form.querySelector('select[name="produtoId"]');
+            clientList.appendChild(buildClientCard(data, sourceSelect));
+            return true;
+        }
+
+        async function submitJsonForm(form) {
+            const response = await fetch(form.action, {
+                method: form.method || 'POST',
+                body: new FormData(form),
+                credentials: 'same-origin',
+                headers: {
+                    'X-Requested-With': 'fetch',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('Falha ao salvar.');
+            return response.json();
+        }
+
+        async function submitAddItemWithoutReload(event) {
+            event.preventDefault();
+
+            const form = event.currentTarget;
+            if (form.dataset.loading === 'true') return;
+
+            try {
+                setFormLoading(form, true);
+
+                const data = await submitJsonForm(form);
+                applyItemUpdate(data);
+                form.reset();
+
+                bindModalBackdrops();
+                bindAsyncForms();
+                refreshIcons();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                if (document.body.contains(form)) {
+                    setFormLoading(form, false);
+                }
+            }
+        }
+
+        async function submitNewOrderWithoutReload(event) {
+            event.preventDefault();
+
+            const form = event.currentTarget;
+            if (form.dataset.loading === 'true') return;
+
+            try {
+                setFormLoading(form, true);
+                const data = await submitJsonForm(form);
+                applyNewOrder(data, form);
+                bindAsyncForms();
+                refreshIcons();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                if (document.body.contains(form)) {
+                    setFormLoading(form, false);
+                }
+            }
+        }
+
+        async function submitNewClientWithoutReload(event) {
+            event.preventDefault();
+
+            const form = event.currentTarget;
+            if (form.dataset.loading === 'true') return;
+
+            try {
+                setFormLoading(form, true);
+                const data = await submitJsonForm(form);
+                applyNewClient(data, form);
+                form.reset();
+                bindAsyncForms();
+                refreshIcons();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                if (document.body.contains(form)) {
+                    setFormLoading(form, false);
+                }
+            }
+        }
+
+        function bindAsyncAddItemForms() {
+            document.querySelectorAll('.add-item-form').forEach(function(form) {
+                if (form.dataset.asyncBound) return;
+                form.dataset.asyncBound = 'true';
+                form.addEventListener('submit', submitAddItemWithoutReload);
+            });
+        }
+
+        function bindAsyncNewOrderForms() {
+            document.querySelectorAll('.new-order-form').forEach(function(form) {
+                if (form.dataset.asyncBound) return;
+                form.dataset.asyncBound = 'true';
+                form.addEventListener('submit', submitNewOrderWithoutReload);
+            });
+        }
+
+        function bindAsyncNewClientForms() {
+            document.querySelectorAll('.new-client-inline-form').forEach(function(form) {
+                if (form.dataset.asyncBound) return;
+                form.dataset.asyncBound = 'true';
+                form.addEventListener('submit', submitNewClientWithoutReload);
+            });
+        }
+
+        function bindAsyncForms() {
+            bindAsyncAddItemForms();
+            bindAsyncNewOrderForms();
+            bindAsyncNewClientForms();
+        }
+
+        bindModalBackdrops();
+        bindAsyncForms();
+
+        const openMesaModalId = /*[[${openMesaModalId}]]*/ null;
+        if (openMesaModalId) {
+            openMesaModal(openMesaModalId);
+        }
 
         setTimeout(function() {
             document.querySelectorAll('.alert').forEach(function(alert) {

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ContaRepository extends JpaRepository<Conta, Long> {
     List<Conta> findByMesaId(Long mesaId);
+    boolean existsByMesaId(Long mesaId);
 }

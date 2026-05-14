@@ -110,13 +110,50 @@ public class PedidoController {
         return "pedidos";
     }
 
-    @PostMapping("/abrir")
+    @ResponseBody
+    @PostMapping(value = "/abrir", headers = "X-Requested-With=fetch", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ClienteCriadoView abrirPedidoAjax(@RequestParam Long mesaId,
+                                             @RequestParam String cliente,
+                                             @RequestParam(required = false) Boolean individual,
+                                             @RequestParam(required = false) Boolean taxaServico,
+                                             @RequestParam Long produtoId,
+                                             @RequestParam Integer quantidade) {
+        Conta conta = contaService.abrir(new AbrirContaRequest(
+                mesaId,
+                cliente,
+                individual != null && individual,
+                taxaServico != null && taxaServico
+        ));
+        Pedido pedido = pedidoService.criar(new PedidoRequest(conta.getId()));
+        ItemPedido item = pedidoService.adicionarItem(pedido.getId(), new ItemPedidoRequest(produtoId, quantidade));
+        MesaPedidoView mesaPedido = montarMesaPedidoViewPorMesa(conta.getMesa().getId());
+
+        return new ClienteCriadoView(
+                conta.getMesa().getId(),
+                conta.getId(),
+                conta.getCliente(),
+                conta.getStatus().name(),
+                pedido.getId(),
+                item.getId(),
+                item.getProduto().getNome(),
+                item.getQuantidade(),
+                formatarMoeda(item.getPrecoUnitario()),
+                formatarMoeda(item.getTotal()),
+                formatarMoeda(pedido.getTotal()),
+                formatarMoeda(conta.getTotal()),
+                formatarMoeda(mesaPedido.totalAberto()),
+                formatarMoeda(mesaPedido.totalFechado())
+        );
+    }
+
+    @PostMapping(value = "/abrir", headers = "!X-Requested-With")
     public String abrirPedido(@RequestParam Long mesaId,
                               @RequestParam String cliente,
                               @RequestParam(required = false) Boolean individual,
                               @RequestParam(required = false) Boolean taxaServico,
                               @RequestParam Long produtoId,
                               @RequestParam Integer quantidade,
+                              @RequestParam(required = false) Long manterMesaModalId,
                               RedirectAttributes redirectAttributes) {
         try {
             Conta conta = contaService.abrir(new AbrirContaRequest(
@@ -131,24 +168,69 @@ public class PedidoController {
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        manterModalMesaAberto(redirectAttributes, manterMesaModalId);
         return "redirect:/pedidos";
     }
 
-    @PostMapping("/contas/{contaId}/novo")
-    public String criarPedidoParaConta(@PathVariable Long contaId, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    @PostMapping(value = "/contas/{contaId}/novo", headers = "X-Requested-With=fetch", produces = MediaType.APPLICATION_JSON_VALUE)
+    public PedidoCriadoView criarPedidoParaContaAjax(@PathVariable Long contaId) {
+        Pedido pedido = pedidoService.criar(new PedidoRequest(contaId));
+        Conta conta = pedido.getConta();
+
+        return new PedidoCriadoView(
+                conta.getMesa().getId(),
+                conta.getId(),
+                pedido.getId(),
+                formatarMoeda(pedido.getTotal())
+        );
+    }
+
+    @PostMapping(value = "/contas/{contaId}/novo", headers = "!X-Requested-With")
+    public String criarPedidoParaConta(@PathVariable Long contaId,
+                                       @RequestParam(required = false) Long manterMesaModalId,
+                                       RedirectAttributes redirectAttributes) {
         try {
             pedidoService.criar(new PedidoRequest(contaId));
             redirectAttributes.addFlashAttribute("successMessage", "Novo pedido criado para a conta.");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        manterModalMesaAberto(redirectAttributes, manterMesaModalId);
         return "redirect:/pedidos";
     }
 
-    @PostMapping("/{id}/itens")
+    @ResponseBody
+    @PostMapping(value = "/{id}/itens", headers = "X-Requested-With=fetch", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ItemAdicionadoView adicionarItemTelaAjax(@PathVariable Long id,
+                                                    @RequestParam Long produtoId,
+                                                    @RequestParam Integer quantidade) {
+        ItemPedido item = pedidoService.adicionarItem(id, new ItemPedidoRequest(produtoId, quantidade));
+        Pedido pedido = pedidoService.buscar(id);
+        Conta conta = pedido.getConta();
+        MesaPedidoView mesaPedido = montarMesaPedidoViewPorMesa(conta.getMesa().getId());
+
+        return new ItemAdicionadoView(
+                conta.getMesa().getId(),
+                conta.getId(),
+                pedido.getId(),
+                item.getId(),
+                item.getProduto().getNome(),
+                item.getQuantidade(),
+                formatarMoeda(item.getPrecoUnitario()),
+                formatarMoeda(item.getTotal()),
+                formatarMoeda(pedido.getTotal()),
+                formatarMoeda(conta.getTotal()),
+                formatarMoeda(mesaPedido.totalAberto()),
+                formatarMoeda(mesaPedido.totalFechado())
+        );
+    }
+
+    @PostMapping(value = "/{id}/itens", headers = "!X-Requested-With")
     public String adicionarItemTela(@PathVariable Long id,
                                     @RequestParam Long produtoId,
                                     @RequestParam Integer quantidade,
+                                    @RequestParam(required = false) Long manterMesaModalId,
                                     RedirectAttributes redirectAttributes) {
         try {
             pedidoService.adicionarItem(id, new ItemPedidoRequest(produtoId, quantidade));
@@ -156,28 +238,35 @@ public class PedidoController {
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        manterModalMesaAberto(redirectAttributes, manterMesaModalId);
         return "redirect:/pedidos";
     }
 
     @PostMapping("/itens/{itemId}/remover")
-    public String removerItemTela(@PathVariable Long itemId, RedirectAttributes redirectAttributes) {
+    public String removerItemTela(@PathVariable Long itemId,
+                                  @RequestParam(required = false) Long manterMesaModalId,
+                                  RedirectAttributes redirectAttributes) {
         try {
             pedidoService.removerItem(itemId);
             redirectAttributes.addFlashAttribute("successMessage", "Item removido do pedido.");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        manterModalMesaAberto(redirectAttributes, manterMesaModalId);
         return "redirect:/pedidos";
     }
 
     @PostMapping("/contas/{contaId}/fechar")
-    public String fecharContaTela(@PathVariable Long contaId, RedirectAttributes redirectAttributes) {
+    public String fecharContaTela(@PathVariable Long contaId,
+                                  @RequestParam(required = false) Long manterMesaModalId,
+                                  RedirectAttributes redirectAttributes) {
         try {
             contaService.fechar(contaId);
             redirectAttributes.addFlashAttribute("successMessage", "Conta fechada com sucesso.");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
+        manterModalMesaAberto(redirectAttributes, manterMesaModalId);
         return "redirect:/pedidos";
     }
 
@@ -224,6 +313,23 @@ public class PedidoController {
         return valor != null && valor.toLowerCase(Locale.ROOT).contains(termo);
     }
 
+    private void manterModalMesaAberto(RedirectAttributes redirectAttributes, Long mesaId) {
+        if (mesaId != null) {
+            redirectAttributes.addFlashAttribute("openMesaModalId", mesaId);
+        }
+    }
+
+    private MesaPedidoView montarMesaPedidoViewPorMesa(Long mesaId) {
+        List<Conta> contas = contaService.listar().stream()
+                .filter(conta -> conta.getMesa().getId().equals(mesaId))
+                .toList();
+        return montarMesaPedidoView(contas);
+    }
+
+    private String formatarMoeda(BigDecimal valor) {
+        return valor.toPlainString();
+    }
+
     private MesaPedidoView montarMesaPedidoView(List<Conta> contas) {
         Mesa mesa = contas.get(0).getMesa();
         BigDecimal totalMesa = contas.stream()
@@ -252,5 +358,44 @@ public class PedidoController {
             BigDecimal totalFechado,
             int pedidos,
             long clientesAbertos
+    ) {}
+
+    public record ItemAdicionadoView(
+            Long mesaId,
+            Long contaId,
+            Long pedidoId,
+            Long itemId,
+            String produtoNome,
+            Integer quantidade,
+            String precoUnitario,
+            String itemTotal,
+            String pedidoTotal,
+            String contaTotal,
+            String mesaTotalAberto,
+            String mesaTotalFechado
+    ) {}
+
+    public record PedidoCriadoView(
+            Long mesaId,
+            Long contaId,
+            Long pedidoId,
+            String pedidoTotal
+    ) {}
+
+    public record ClienteCriadoView(
+            Long mesaId,
+            Long contaId,
+            String cliente,
+            String status,
+            Long pedidoId,
+            Long itemId,
+            String produtoNome,
+            Integer quantidade,
+            String precoUnitario,
+            String itemTotal,
+            String pedidoTotal,
+            String contaTotal,
+            String mesaTotalAberto,
+            String mesaTotalFechado
     ) {}
 }

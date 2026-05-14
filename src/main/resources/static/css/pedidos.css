@@ -42,6 +42,7 @@
     background: #f6f4f2;
     color: var(--vermelho);
     border: 1px solid #eadfda;
+    text-decoration: none;
 }
 
 .btn-secondary:hover {
@@ -105,6 +106,12 @@
     border: none;
     color: inherit;
     cursor: pointer;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .summary-grid {
@@ -685,6 +692,14 @@
     .header-actions {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .page-actions {
+        align-items: stretch;
+    }
+
+    .page-actions .btn-primary {
+        width: 100%;
     }
 
     .main-content {
