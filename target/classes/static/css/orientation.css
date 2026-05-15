@@ -1,0 +1,45 @@
+/* Blocks tablet portrait usage and keeps the system available in landscape. */
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) and (min-width: 600px) and (max-width: 1024px) {
+    html,
+    body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        touch-action: none;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 2147483646;
+        background:
+            linear-gradient(135deg, rgba(143, 35, 37, 0.96), rgba(226, 155, 24, 0.96)),
+            var(--branco, #ffffff);
+        pointer-events: auto;
+    }
+
+    body::after {
+        content: "Gire o tablet para a horizontal\A A tela vertical esta bloqueada em tablets.";
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 2147483647;
+        width: min(78vw, 520px);
+        transform: translate(-50%, -50%);
+        padding: 32px;
+        border-radius: 16px;
+        background: var(--branco, #ffffff);
+        color: var(--vermelho, #8f2325);
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+        font-family: var(--font-body, Arial, sans-serif);
+        font-size: clamp(1.35rem, 3.8vw, 2rem);
+        font-weight: 800;
+        line-height: 1.35;
+        text-align: center;
+        white-space: pre-line;
+        pointer-events: auto;
+    }
+}
